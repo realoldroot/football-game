@@ -7,6 +7,8 @@ import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author zhengenshen
  * @date 2018-05-19 10:46
@@ -29,18 +31,23 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
         String ip = ch.remoteAddress().toString();
         String[] ipArr = ip.split(":");
         String realIp = ipArr[0].substring(ipArr[0].indexOf("/") + 1);
-
         log.info("channel hash : " + ch.hashCode());
-        ManagerService.goNextSetp(ch.hashCode());
         log.info("ManagerConnector connected " + ip);
-        log("channelActive");
+        if (OnlineManage.notContains(ch)) {
+            ctx.executor().schedule(() -> {
+                if (OnlineManage.notContains(ch)) {
+                    log.error("这么长时间过去了，依旧没有校验，关闭！");
+                    ch.close();
+                }
+            }, 5, TimeUnit.SECONDS);
+        }
 
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         Channel ch = ctx.channel();
-        ManagerService.clear(ch.hashCode());
+        OnlineManage.remove(ch);
         log.info("ManagerConnector closed " + ch.remoteAddress());
         log("channelInactive");
 
@@ -58,14 +65,14 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
         log.debug("msg------------------->{}", msg);
 
         Channel ch = ctx.channel();
-        String request = msg.toString().toLowerCase();
-        String response = "Please i something.";
+        String request = msg.toString();
+        String response;
         if (request.length() > 0) {
             Integer cid = ch.hashCode();
-            Integer step = ManagerService.getStep(cid);
-            if (step == 1) {
-                response = login(request, step, cid);
+            if (OnlineManage.notContains(ch)) {
+                response = login(request, ch);
             } else {
+                String[] params = request.split(Response.SPLIT_CHAR);
                 response = handler(request);
             }
 
@@ -77,8 +84,7 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
     }
 
 
-    private String login(String request, Integer step, Integer cid) {
-
+    private String login(String request, Channel ch) {
         User user;
         try {
             user = JsonTools.toBean(request, User.class);
@@ -87,7 +93,7 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
         }
         String response;
         if (user.check()) {
-            ManagerService.goNextSetp(cid);
+            OnlineManage.add(ch);
             response = Response.success();
         } else {
             response = Response.authError();
@@ -101,7 +107,7 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void log(String str) {
-        log.info("{}校验map里存储{}个 : ", str, ManagerService.getAuthStep().size());
-        ManagerService.getAuthStep().forEach((k, v) -> log.info("key : " + k + " ---> value : " + v));
+        // log.info("{}校验map里存储{}个 : ", str, ManagerService.getAuthStep().size());
+        // ManagerService.getAuthStep().forEach((k, v) -> log.info("key : " + k + " ---> value : " + v));
     }
 }
