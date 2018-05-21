@@ -5,5 +5,7 @@ package com.artemis.football.model;
  * @date 2018-05-19 10:41
  */
 
-public class IBaseCharacter {
+public interface IBaseCharacter {
+
+
 }

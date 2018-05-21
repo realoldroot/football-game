@@ -1,5 +1,7 @@
 package com.artemis.football.connector;
 
+import lombok.Getter;
+
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ManagerService {
 
+    @Getter
     private static ConcurrentHashMap<Integer, Integer> authStep = new ConcurrentHashMap<>();
 
     private static int pId = 0;

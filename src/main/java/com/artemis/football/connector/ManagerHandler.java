@@ -1,5 +1,8 @@
 package com.artemis.football.connector;
 
+import com.artemis.football.common.JsonTools;
+import com.artemis.football.model.Response;
+import com.artemis.football.model.entity.User;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,10 +30,11 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
         String[] ipArr = ip.split(":");
         String realIp = ipArr[0].substring(ipArr[0].indexOf("/") + 1);
 
+        log.info("channel hash : " + ch.hashCode());
         ManagerService.goNextSetp(ch.hashCode());
         log.info("ManagerConnector connected " + ip);
+        log("channelActive");
 
-        //TODO
     }
 
     @Override
@@ -38,11 +42,14 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
         Channel ch = ctx.channel();
         ManagerService.clear(ch.hashCode());
         log.info("ManagerConnector closed " + ch.remoteAddress());
+        log("channelInactive");
 
     }
 
+
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
+        log("channelReadComplete");
         ctx.flush();
     }
 
@@ -72,13 +79,18 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
 
     private String login(String request, Integer step, Integer cid) {
 
+        User user;
+        try {
+            user = JsonTools.toBean(request, User.class);
+        } catch (Exception e) {
+            return Response.jsonParseError();
+        }
         String response;
-        String user = "admin";
-        if (!request.equals(user)) {
-            response = "User name is error, please input again!";
-        } else {
+        if (user.check()) {
             ManagerService.goNextSetp(cid);
-            response = "Please input password:";
+            response = Response.success();
+        } else {
+            response = Response.authError();
         }
         return response;
     }
@@ -86,5 +98,10 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
     private String handler(String request) {
 
         return "";
+    }
+
+    private void log(String str) {
+        log.info("{}校验map里存储{}个 : ", str, ManagerService.getAuthStep().size());
+        ManagerService.getAuthStep().forEach((k, v) -> log.info("key : " + k + " ---> value : " + v));
     }
 }

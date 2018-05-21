@@ -4,6 +4,8 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
@@ -30,7 +32,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
 
         ChannelPipeline pipeline = ch.pipeline();
         pipeline.addLast(new LoggingHandler(LogLevel.INFO));
-        // pipeline.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
+        pipeline.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
         pipeline.addLast(new StringDecoder(Charset.forName("UTF-8")));
         pipeline.addLast(new StringEncoder(Charset.forName("UTF-8")));
         pipeline.addLast(managerHandler);
