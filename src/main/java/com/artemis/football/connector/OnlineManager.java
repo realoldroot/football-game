@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public class OnlineManager {
     private static ChannelGroup group = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
 
-    private static Set<Integer> checked = new ConcurrentSkipListSet<>();
+    public static Set<Integer> checked = new ConcurrentSkipListSet<>();
 
 
     public static void add(Channel channel) {
@@ -73,9 +73,6 @@ public class OnlineManager {
         remove(channel);
     }
 
-    public static Integer hash(Channel channel) {
-        return channel.hashCode();
-    }
 
 
 }

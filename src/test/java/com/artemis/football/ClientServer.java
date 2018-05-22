@@ -1,22 +1,17 @@
 package com.artemis.football;
 
 import com.artemis.football.common.JsonTools;
+import com.artemis.football.connector.MessageDecoder;
+import com.artemis.football.connector.MessageEncoder;
+import com.artemis.football.model.Message;
 import com.artemis.football.model.entity.User;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.charset.Charset;
 
 /**
  * @author zhengenshen
@@ -60,11 +55,13 @@ public class ClientServer {
 
             ChannelPipeline pipeline = ch.pipeline();
 
-            ByteBuf delimiter = Unpooled.copiedBuffer("\t".getBytes());
             // pipeline.addLast("framer", new DelimiterBasedFrameDecoder(2048, delimiter));
-            pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
-            pipeline.addLast("decoder", new StringDecoder(Charset.forName("UTF-8")));
-            pipeline.addLast("encoder", new StringEncoder(Charset.forName("UTF-8")));
+            // pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
+            // pipeline.addLast("decoder", new StringDecoder(Charset.forName("UTF-8")));
+            // pipeline.addLast("encoder", new StringEncoder(Charset.forName("UTF-8")));
+            pipeline.addLast(new MessageEncoder());
+            pipeline.addLast(new MessageDecoder());
+            // pipeline.addFirst(new LineBasedFrameDecoder(65535));
 
             // 客户端的逻辑
             pipeline.addLast("handler", new ClientHandler());
@@ -84,11 +81,13 @@ public class ClientServer {
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             User user = new User();
-            user.setUsername("admin1");
-            user.setPassword("password");
+            user.setUsername("admin");
+            user.setPassword("admin");
 
-            String a = JsonTools.toJson(user) + "\n" + "ddddddddddddddd\ncccccccccccccc\n";
-            ctx.writeAndFlush(a);
+            String a = JsonTools.toJson(user);
+            Message m = new Message((byte) 45, (byte) 0x01, (byte) 1, 1, a.length(), a);
+
+            ctx.writeAndFlush(m);
         }
     }
 }
