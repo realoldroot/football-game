@@ -33,9 +33,9 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
         String realIp = ipArr[0].substring(ipArr[0].indexOf("/") + 1);
         log.info("channel hash : " + ch.hashCode());
         log.info("ManagerConnector connected " + ip);
-        if (OnlineManage.notContains(ch)) {
+        if (OnlineManager.notContains(ch)) {
             ctx.executor().schedule(() -> {
-                if (OnlineManage.notContains(ch)) {
+                if (OnlineManager.notContains(ch)) {
                     log.error("这么长时间过去了，依旧没有校验，关闭！");
                     ch.close();
                 }
@@ -47,7 +47,7 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         Channel ch = ctx.channel();
-        OnlineManage.remove(ch);
+        OnlineManager.remove(ch);
         log.info("ManagerConnector closed " + ch.remoteAddress());
         log("channelInactive");
 
@@ -69,7 +69,7 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
         String response;
         if (request.length() > 0) {
             Integer cid = ch.hashCode();
-            if (OnlineManage.notContains(ch)) {
+            if (OnlineManager.notContains(ch)) {
                 response = login(request, ch);
             } else {
                 String[] params = request.split(Response.SPLIT_CHAR);
@@ -93,7 +93,7 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
         }
         String response;
         if (user.check()) {
-            OnlineManage.add(ch);
+            OnlineManager.add(ch);
             response = Response.success();
         } else {
             response = Response.authError();

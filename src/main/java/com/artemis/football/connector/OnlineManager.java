@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 
 @Slf4j
-public class OnlineManage {
+public class OnlineManager {
     private static ChannelGroup group = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
 
     private static Set<Integer> checked = new ConcurrentSkipListSet<>();

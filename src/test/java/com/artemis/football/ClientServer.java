@@ -84,7 +84,7 @@ public class ClientServer {
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             User user = new User();
-            user.setUsername("admin");
+            user.setUsername("admin1");
             user.setPassword("password");
 
             String a = JsonTools.toJson(user) + "\n" + "ddddddddddddddd\ncccccccccccccc\n";
