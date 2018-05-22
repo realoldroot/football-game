@@ -9,4 +9,7 @@ public class ActionType {
 
     // 校验
     public static final int AUTH = 1;
+
+    public static final int MATCH = 5;
+
 }

@@ -8,6 +8,8 @@ import io.netty.util.concurrent.ImmediateEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
@@ -16,10 +18,10 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 
 @Slf4j
-public class OnlineManager {
+public class SessionManager {
     private static ChannelGroup group = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
-
     public static Set<Integer> checked = new ConcurrentSkipListSet<>();
+    private static ConcurrentMap<String, Channel> userIdChannels = new ConcurrentHashMap<>();
 
 
     public static void add(Channel channel) {
@@ -74,5 +76,8 @@ public class OnlineManager {
     }
 
 
-
+    public static void show() {
+        log.error("$$$$$$$$$$$$$$$$$$$$$");
+        checked.forEach(k -> log.error(k + ""));
+    }
 }

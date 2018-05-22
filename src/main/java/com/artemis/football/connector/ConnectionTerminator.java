@@ -19,7 +19,7 @@ public class ConnectionTerminator implements Runnable {
 
     @Override
     public void run() {
-        if (OnlineManager.notContains(ctx.channel())) {
+        if (SessionManager.notContains(ctx.channel())) {
             log.error("这么长时间过去了，依旧没有校验，关闭！");
             ctx.close();
         }

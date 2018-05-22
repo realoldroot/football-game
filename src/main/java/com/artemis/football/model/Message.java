@@ -44,4 +44,25 @@ public class Message {
 
     public Message() {
     }
+
+    public static Message success() {
+        String body = "{\"code\":\"success\"}";
+        return new Message(body);
+    }
+
+    public static Message error() {
+        String body = "{\"code\":\"error\"}";
+        return new Message(body);
+    }
+
+    public static Message typeBuild(int command, String body) {
+        Message m = new Message();
+        m.tag = MessageDecoder.PACKAGE_TAG;
+        m.encode = 0x01;
+        m.encrypt = 0x01;
+        m.command = command;
+        m.length = body.length();
+        m.body = body;
+        return m;
+    }
 }

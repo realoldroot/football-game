@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 @Data
 public class User {
 
+    private Integer id;
     private String username;
     private String password;
 
