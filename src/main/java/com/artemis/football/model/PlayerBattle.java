@@ -7,9 +7,9 @@ package com.artemis.football.model;
 
 public class PlayerBattle {
 
-    private IBaseCharacter player1;
+    private BasePlayer player1;
 
-    private IBaseCharacter player2;
+    private BasePlayer  player2;
 
     private int score;
 }

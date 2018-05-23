@@ -1,6 +1,6 @@
 package com.artemis.football.model;
 
-import com.artemis.football.common.ActionType;
+import com.artemis.football.common.JsonTools;
 import com.artemis.football.connector.MessageDecoder;
 import lombok.Data;
 
@@ -20,7 +20,7 @@ public class Message {
     /* 类型**/
     private int command;
     /*包的长度*/
-    private int length = 1024;
+    private int length;
 
     /*内容*/
     private String body;
@@ -34,50 +34,19 @@ public class Message {
         this.body = body;
     }
 
-    public Message(String body) {
-        this.tag = MessageDecoder.PACKAGE_TAG;
-        this.encode = 0x01;
-        this.encrypt = 0x01;
-        this.command = 0;
-        this.length = body.length();
-        this.body = body;
-    }
 
-    public Message(int command, String body) {
+    public Message(int command, Object body) throws Exception {
         this.tag = MessageDecoder.PACKAGE_TAG;
         this.encode = 0x01;
         this.encrypt = 0x01;
         this.command = command;
-        this.length = body.length();
-        this.body = body;
+        String json = JsonTools.toJson(body);
+        this.length = json.length();
+        this.body = json;
     }
 
     public Message() {
     }
 
-    public static Message success() {
-        String body = "{\"code\":\"success\"}";
-        return new Message(body);
-    }
 
-    public static Message error() {
-        String body = "{\"code\":\"error\"}";
-        return new Message(body);
-    }
-
-    public static Message authError() {
-        String body = "{\"code\":\"error\"}";
-        return new Message(ActionType.AUTH, body);
-    }
-
-    public static Message typeBuild(int command, String body) {
-        Message m = new Message();
-        m.tag = MessageDecoder.PACKAGE_TAG;
-        m.encode = 0x01;
-        m.encrypt = 0x01;
-        m.command = command;
-        m.length = body.length();
-        m.body = body;
-        return m;
-    }
 }

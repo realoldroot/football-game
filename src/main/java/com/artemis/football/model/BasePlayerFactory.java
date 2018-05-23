@@ -8,7 +8,7 @@ package com.artemis.football.model;
 public class BasePlayerFactory implements IBasePlayerFactory {
 
     @Override
-    public IBaseCharacter getPlayer() {
+    public BasePlayer getPlayer() {
         return new BasePlayer();
     }
 }

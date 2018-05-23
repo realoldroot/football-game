@@ -7,5 +7,5 @@ package com.artemis.football.model;
 
 public interface IBasePlayerFactory {
 
-    IBaseCharacter getPlayer();
+    BasePlayer getPlayer();
 }

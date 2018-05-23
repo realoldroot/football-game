@@ -1,5 +1,6 @@
 package com.artemis.football.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.netty.channel.Channel;
 import lombok.Data;
 
@@ -12,11 +13,13 @@ import java.util.Map;
  */
 
 @Data
-public class BasePlayer implements IBaseCharacter {
+public class BasePlayer {
 
     protected int id;
+    @JsonIgnore
     protected Channel channel;
-    protected String name;
+    protected String username;
+    protected String nickname;
     protected String teamName;
     private BasePosition position;
 
@@ -24,53 +27,4 @@ public class BasePlayer implements IBaseCharacter {
 
     protected boolean isInQueue = false;
 
-    public String getTeamName() {
-        return teamName;
-    }
-
-    public void setTeamName(String teamName) {
-        this.teamName = teamName;
-    }
-
-    @Override
-    public BasePosition gPosition() {
-        return position;
-    }
-
-    @Override
-    public void sPosition(BasePosition position) {
-        this.position = position;
-    }
-
-
-    @Override
-    public void removeAction(int id) {
-
-    }
-
-    @Override
-    public Channel gChannel() {
-        return this.channel;
-    }
-
-    @Override
-    public void sChannel(Channel channel) {
-
-        this.channel = channel;
-    }
-
-    @Override
-    public void logoutHook() {
-
-    }
-
-    @Override
-    public void loginHook() {
-
-    }
-
-    @Override
-    public void setIsInQueue(boolean isInQueue) {
-
-    }
 }

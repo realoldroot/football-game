@@ -1,6 +1,5 @@
 package com.artemis.football.service;
 
-import com.artemis.football.common.MD5Tools;
 import com.artemis.football.model.entity.User;
 import com.artemis.football.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +22,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(String username, String password) {
-        String encode = MD5Tools.crypt(password);
+        // String encode = MD5Tools.crypt(password);
 
-        Optional<User> resp = userRepository.findByUsernameAndPassword(username, encode);
+        Optional<User> resp = userRepository.findByUsernameAndPassword(username, password);
         return resp.orElse(null);
     }
 }

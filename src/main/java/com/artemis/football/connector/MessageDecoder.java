@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.CorruptedFrameException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @date 2018-05-22 11:31
  */
 
+@Slf4j
 public class MessageDecoder extends ByteToMessageDecoder {
 
     /**
@@ -41,6 +43,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
         byte[] data = new byte[length];
         buf.readBytes(data);
         Message message = new Message(tag, encode, encrypt, command, length, new String(data, "UTF-8"));
+        log.info(message.toString());
         out.add(message);
     }
 }

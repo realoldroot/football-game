@@ -28,6 +28,7 @@ public class User {
     private String nickname;
     @Column(name = "teamname")
     private String teamName;
-
+    @Column(name = "headimg")
+    private String headimg;
 
 }

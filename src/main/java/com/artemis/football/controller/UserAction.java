@@ -7,8 +7,9 @@ import com.artemis.football.common.Config;
 import com.artemis.football.common.JsonTools;
 import com.artemis.football.connector.IBaseConnector;
 import com.artemis.football.connector.SessionManager;
-import com.artemis.football.model.IBaseCharacter;
+import com.artemis.football.model.BasePlayer;
 import com.artemis.football.model.Message;
+import com.artemis.football.model.MessageFactory;
 import com.artemis.football.model.entity.User;
 import com.artemis.football.service.UserService;
 import io.netty.channel.Channel;
@@ -41,19 +42,20 @@ public class UserAction {
             User resp = userService.login(user.getUsername(), user.getPassword());
             if (resp != null) {
                 SessionManager.add(ch);
-                IBaseCharacter player = Config.getPlayerFactory().getPlayer();
-                player.sChannel(ch);
+                BasePlayer player = Config.getPlayerFactory().getPlayer();
+                player.setChannel(ch);
                 player.setId(resp.getId());
-                player.setName(resp.getNickname());
+                player.setUsername(resp.getUsername());
+                player.setNickname(resp.getNickname());
                 player.setTeamName(resp.getTeamName());
                 ch.attr(IBaseConnector.PLAYER).set(player);
-                response = Message.success();
+                response = MessageFactory.authError();
             } else {
-                response = Message.authError();
+                response = MessageFactory.authError();
             }
 
         } else {
-            response = Message.success();
+            response = MessageFactory.authSuccess();
         }
         ChannelFuture future = ch.write(response);
         // future.addListener(ChannelFutureListener.CLOSE);
