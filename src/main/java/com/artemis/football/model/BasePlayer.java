@@ -17,11 +17,20 @@ public class BasePlayer implements IBaseCharacter {
     protected int id;
     protected Channel channel;
     protected String name;
+    protected String teamName;
     private BasePosition position;
 
     private Map<Integer, BasePosition> actions = new HashMap<>();
 
     protected boolean isInQueue = false;
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
 
     @Override
     public BasePosition gPosition() {

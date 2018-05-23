@@ -77,7 +77,6 @@ public class SessionManager {
 
 
     public static void show() {
-        log.error("$$$$$$$$$$$$$$$$$$$$$");
         checked.forEach(k -> log.error(k + ""));
     }
 }

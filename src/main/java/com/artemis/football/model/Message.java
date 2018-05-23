@@ -1,5 +1,6 @@
 package com.artemis.football.model;
 
+import com.artemis.football.common.ActionType;
 import com.artemis.football.connector.MessageDecoder;
 import lombok.Data;
 
@@ -42,6 +43,15 @@ public class Message {
         this.body = body;
     }
 
+    public Message(int command, String body) {
+        this.tag = MessageDecoder.PACKAGE_TAG;
+        this.encode = 0x01;
+        this.encrypt = 0x01;
+        this.command = command;
+        this.length = body.length();
+        this.body = body;
+    }
+
     public Message() {
     }
 
@@ -53,6 +63,11 @@ public class Message {
     public static Message error() {
         String body = "{\"code\":\"error\"}";
         return new Message(body);
+    }
+
+    public static Message authError() {
+        String body = "{\"code\":\"error\"}";
+        return new Message(ActionType.AUTH, body);
     }
 
     public static Message typeBuild(int command, String body) {

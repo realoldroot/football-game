@@ -10,10 +10,12 @@ import com.artemis.football.connector.SessionManager;
 import com.artemis.football.model.IBaseCharacter;
 import com.artemis.football.model.Message;
 import com.artemis.football.model.entity.User;
+import com.artemis.football.service.UserService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author zhengenshen
@@ -24,6 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 @NettyController
 public class UserAction {
 
+    @Autowired
+    private UserService userService;
+
     @ActionMap(ActionType.AUTH)
     public void login(ChannelHandlerContext ctx, Message message) throws Exception {
 
@@ -33,18 +38,20 @@ public class UserAction {
         Channel ch = ctx.channel();
 
         if (SessionManager.notContains(ch)) {
-            // if (StringUtils.equals(user.getUsername(), "admin") && StringUtils.equals(user.getPassword(), "admin")) {
+            User resp = userService.login(user.getUsername(), user.getPassword());
+            if (resp != null) {
                 SessionManager.add(ch);
                 IBaseCharacter player = Config.getPlayerFactory().getPlayer();
                 player.sChannel(ch);
-                // player.setId(user.getId());
-                player.setId(1);
+                player.setId(resp.getId());
+                player.setName(resp.getNickname());
+                player.setTeamName(resp.getTeamName());
                 ch.attr(IBaseConnector.PLAYER).set(player);
-
                 response = Message.success();
-            // } else {
-            //     response = Message.error();
-            // }
+            } else {
+                response = Message.authError();
+            }
+
         } else {
             response = Message.success();
         }

@@ -21,6 +21,10 @@ public interface IBaseCharacter {
 
     void setName(String name);
 
+    String getTeamName();
+
+    void setTeamName(String teamName);
+
     void removeAction(int id);
 
     Channel gChannel();

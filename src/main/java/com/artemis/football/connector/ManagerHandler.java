@@ -1,8 +1,6 @@
 package com.artemis.football.connector;
 
-import com.artemis.football.common.JsonTools;
 import com.artemis.football.model.Response;
-import com.artemis.football.model.entity.User;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -70,7 +68,7 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
         if (request.length() > 0) {
             Integer cid = ch.hashCode();
             if (SessionManager.notContains(ch)) {
-                response = login(request, ch);
+                response = "";
             } else {
                 String[] params = request.split(Response.SPLIT_CHAR);
                 response = handler(request);
@@ -83,23 +81,6 @@ public class ManagerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-
-    private String login(String request, Channel ch) {
-        User user;
-        try {
-            user = JsonTools.toBean(request, User.class);
-        } catch (Exception e) {
-            return Response.jsonParseError();
-        }
-        String response;
-        if (user.check()) {
-            SessionManager.add(ch);
-            response = Response.success();
-        } else {
-            response = Response.authError();
-        }
-        return response;
-    }
 
     private String handler(String request) {
 

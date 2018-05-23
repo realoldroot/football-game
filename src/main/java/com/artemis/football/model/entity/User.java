@@ -1,7 +1,11 @@
 package com.artemis.football.model.entity;
 
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * @author zhengenshen
@@ -9,17 +13,21 @@ import org.apache.commons.lang3.StringUtils;
  */
 
 @Data
+@Entity
+@Table(name = "footballusers")
 public class User {
 
+    @Id
+    @Column(name = "footballuserid")
     private Integer id;
+    @Column(name = "userphone")
     private String username;
+    @Column(name = "password")
     private String password;
+    @Column(name = "nickname")
+    private String nickname;
+    @Column(name = "teamname")
+    private String teamName;
 
-    public boolean check() {
-        if (StringUtils.equals(this.username, "admin") && StringUtils.equals(this.password, "password")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+
 }
