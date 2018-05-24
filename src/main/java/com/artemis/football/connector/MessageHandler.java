@@ -30,7 +30,7 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable t) {
-        log.error(t.getMessage());
+        log.error(t.getMessage(), t);
         SessionManager.remove(ctx.channel());
     }
 
@@ -66,7 +66,6 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        SessionManager.show();
         ctx.flush();
     }
 

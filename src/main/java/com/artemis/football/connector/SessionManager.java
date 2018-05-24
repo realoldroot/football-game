@@ -1,6 +1,8 @@
 package com.artemis.football.connector;
 
+import com.artemis.football.model.BasePlayer;
 import com.artemis.football.model.Response;
+import com.artemis.football.model.entity.User;
 import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -21,12 +23,13 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public class SessionManager {
     private static ChannelGroup group = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
     public static Set<Integer> checked = new ConcurrentSkipListSet<>();
-    private static ConcurrentMap<String, Channel> userIdChannels = new ConcurrentHashMap<>();
+    private static ConcurrentMap<Integer, Channel> userIdChannels = new ConcurrentHashMap<>();
 
 
-    public static void add(Channel channel) {
+    public static void add(Channel channel, User user) {
         group.add(channel);
         checked.add(channel.hashCode());
+        userIdChannels.put(user.getId(), channel);
     }
 
     public static boolean contains(Channel channel) {
@@ -37,15 +40,8 @@ public class SessionManager {
         return !contains(channel);
     }
 
-    public static void close() {
-        checked.clear();
-        group.close();
-    }
-
     /**
      * 广播
-     *
-     * @param o
      */
     public static void broadcast(Object o) {
         group.writeAndFlush(Response.broadcast(o));
@@ -57,26 +53,14 @@ public class SessionManager {
     public static void remove(Channel channel) {
         group.remove(channel);
         checked.remove(channel.hashCode());
+        BasePlayer player = channel.attr(IBaseConnector.PLAYER).get();
+        if (player != null) {
+            userIdChannels.remove(player.getId());
+        }
     }
-
-    public static void loginSuccessReturn() {
-
-    }
-
-    /**
-     * 鉴权成功上线
-     */
-    public static void online(Channel channel) {
-        add(channel);
-        channel.writeAndFlush(Response.success());
-    }
-
-    public static void offline(Channel channel) {
-        remove(channel);
-    }
-
 
     public static void show() {
-        checked.forEach(k -> log.error(k + ""));
+        checked.forEach(k -> log.info(k + ""));
+        userIdChannels.forEach((k, v) -> log.info(k + " : " + v + "\t"));
     }
 }

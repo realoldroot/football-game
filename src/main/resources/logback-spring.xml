@@ -17,6 +17,8 @@
             </encoder>
         </appender>
         <logger name="com.artemis" level="debug"/>
+        <logger name="org.mongodb.driver.cluster" level="info"/>
+
         <root level="debug">
             <appender-ref ref="CONSOLE"/>
         </root>

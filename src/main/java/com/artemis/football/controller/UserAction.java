@@ -41,7 +41,7 @@ public class UserAction {
         if (SessionManager.notContains(ch)) {
             User resp = userService.login(user.getUsername(), user.getPassword());
             if (resp != null) {
-                SessionManager.add(ch);
+                SessionManager.add(ch, resp);
                 BasePlayer player = Config.getPlayerFactory().getPlayer();
                 player.setChannel(ch);
                 player.setId(resp.getId());
@@ -49,7 +49,7 @@ public class UserAction {
                 player.setNickname(resp.getNickname());
                 player.setTeamName(resp.getTeamName());
                 ch.attr(IBaseConnector.PLAYER).set(player);
-                response = MessageFactory.authError();
+                response = MessageFactory.authSuccess();
             } else {
                 response = MessageFactory.authError();
             }
