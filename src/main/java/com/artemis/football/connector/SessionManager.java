@@ -58,8 +58,8 @@ public class SessionManager {
         }
     }
 
-    public static Channel getChannel(long uid) {
-        return userIdChannels.get(uid);
+    public static Channel getChannel(Object uid) {
+        return userIdChannels.getOrDefault(uid, null);
     }
 
     public static void show() {

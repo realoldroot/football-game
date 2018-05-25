@@ -29,6 +29,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) throws Exception {
         buf.markReaderIndex();
+        log.info("buf 长度 : {}", buf.readableBytes());
         if (buf.readableBytes() < HEAD_LENGHT) {
             throw new CorruptedFrameException("包长度问题");
         }
@@ -43,7 +44,6 @@ public class MessageDecoder extends ByteToMessageDecoder {
         byte[] data = new byte[length];
         buf.readBytes(data);
         Message message = new Message(tag, encode, encrypt, command, length, new String(data, "UTF-8"));
-        log.info(message.toString());
         out.add(message);
     }
 

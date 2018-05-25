@@ -43,7 +43,7 @@ public class Message {
         this.encrypt = 0x01;
         this.command = command;
         String json = JsonTools.toJson(body);
-        this.length = json.length();
+        this.length = json.getBytes("UTF-8").length;
         this.body = json;
     }
 

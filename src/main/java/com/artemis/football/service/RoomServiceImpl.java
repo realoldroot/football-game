@@ -56,30 +56,61 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void ready(BasePlayer player, Long id) {
-        Object o = redisTemplate.opsForValue().get(id);
+        Object o = redisTemplate.opsForValue().get(id.toString());
         if (o instanceof MatchRoom) {
             player.setStatus(1);
             MatchRoom mr = (MatchRoom) o;
             mr.putPlayer(player.getId(), player);
             redisTemplate.opsForValue().set(id + "", mr);
 
-            taskScheduler.execute(() -> {
-                long count = mr.getPlayers().entrySet().parallelStream()
-                        .filter(v -> v.getValue().getStatus() == 1).count();
-                if (count >= 2) {
-                    try {
-                        Message m = MessageFactory.success(ActionType.ALL_READY, mr);
-                        mr.getPlayers().keySet().parallelStream().forEach(key -> {
-                            Channel ch = SessionManager.getChannel(key);
-                            if (ch != null) {
-                                ch.writeAndFlush(m);
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            //TODO 这里暂时会有问题，没有考虑到并发情况，应该针对对象加锁
+            taskScheduler.execute(new Task(mr));
+
+            // taskScheduler.execute(() -> {
+            //     long count = mr.getPlayers().entrySet().parallelStream()
+            //             .filter(v -> v.getValue().getStatus() == 1).count();
+            //     if (count >= 2) {
+            //         try {
+            //             Message m = MessageFactory.success(ActionType.ALL_READY, mr);
+            //             mr.getPlayers().keySet().parallelStream().forEach(key -> {
+            //                 Channel ch = SessionManager.getChannel(key);
+            //                 if (ch != null) {
+            //                     ch.writeAndFlush(m);
+            //                 }
+            //             });
+            //         } catch (Exception e) {
+            //             e.printStackTrace();
+            //         }
+            //     }
+            // });
+        }
+    }
+
+    class Task implements Runnable {
+
+        private MatchRoom mr;
+
+        public Task(MatchRoom mr) {
+            this.mr = mr;
+        }
+
+        @Override
+        public void run() {
+            long count = mr.getPlayers().entrySet().parallelStream()
+                    .filter(v -> v.getValue().getStatus() == 1).count();
+            if (count >= 2) {
+                try {
+                    Message m = MessageFactory.success(ActionType.ALL_READY, mr);
+                    mr.getPlayers().keySet().parallelStream().forEach(key -> {
+                        Channel ch = SessionManager.getChannel(key);
+                        if (ch != null) {
+                            ch.writeAndFlush(m);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            });
+            }
         }
     }
 }

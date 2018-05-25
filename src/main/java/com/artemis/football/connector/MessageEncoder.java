@@ -23,6 +23,6 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
         byte[] bytes = msg.getBody().getBytes("UTF-8");
         out.writeInt(bytes.length);
         out.writeBytes(bytes);
-        out.writeBytes(new byte[]{'\n'});
+        out.writeBytes(new byte[]{'\r','\n'});
     }
 }
