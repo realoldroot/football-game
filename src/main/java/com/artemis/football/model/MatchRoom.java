@@ -3,6 +3,8 @@ package com.artemis.football.model;
 import lombok.Data;
 
 import javax.persistence.Id;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 匹配房间
@@ -17,9 +19,16 @@ public class MatchRoom {
     @Id
     private Long id;
     private int score;
-    private BasePlayer player1;
 
-    private BasePlayer player2;
+    private Map<Integer, BasePlayer> players = new HashMap<>();
 
     private int winner;
+
+    public void putPlayer(Integer key, BasePlayer value) {
+        players.put(key, value);
+    }
+
+    public BasePlayer getPlayer(Integer key) {
+        return players.get(key);
+    }
 }

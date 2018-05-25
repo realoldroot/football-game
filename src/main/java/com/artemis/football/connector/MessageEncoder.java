@@ -20,7 +20,9 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
         out.writeByte(msg.getEncode());
         out.writeByte(msg.getEncrypt());
         out.writeInt(msg.getCommand());
-        out.writeInt(msg.getLength());
-        out.writeBytes(msg.getBody().getBytes("UTF-8"));
+        byte[] bytes = msg.getBody().getBytes("UTF-8");
+        out.writeInt(bytes.length);
+        out.writeBytes(bytes);
+        out.writeBytes(new byte[]{'\n'});
     }
 }

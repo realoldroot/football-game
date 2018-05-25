@@ -9,6 +9,7 @@ import com.artemis.football.model.BasePlayer;
 import com.artemis.football.model.MatchRoom;
 import com.artemis.football.model.Message;
 import com.artemis.football.model.MessageFactory;
+import com.artemis.football.model.entity.User;
 import com.artemis.football.service.RoomService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -32,12 +33,20 @@ public class RoomController {
         Channel ch = ctx.channel();
         MatchRoom matchRoom = JsonTools.toBean(message.getBody(), MatchRoom.class);
 
-        BasePlayer player = ch.attr(IBaseConnector.PLAYER).get();
+        User user = ch.attr(IBaseConnector.USER).get();
 
-        roomService.addPlayer(player, matchRoom.getScore());
+        roomService.addPlayer(new BasePlayer(user, ch), matchRoom.getScore());
 
         ch.writeAndFlush(MessageFactory.success());
 
+    }
+
+    @ActionMap(ActionType.READY)
+    public void ready(ChannelHandlerContext ctx, Message message) throws Exception {
+        Channel ch = ctx.channel();
+        BasePlayer player = JsonTools.toBean(message.getBody(), BasePlayer.class);
+        roomService.ready(player, player.getRoomId());
+        ch.writeAndFlush(MessageFactory.success(ActionType.READY));
     }
 
 }

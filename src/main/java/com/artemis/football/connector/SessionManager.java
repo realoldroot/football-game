@@ -1,6 +1,5 @@
 package com.artemis.football.connector;
 
-import com.artemis.football.model.BasePlayer;
 import com.artemis.football.model.Response;
 import com.artemis.football.model.entity.User;
 import io.netty.channel.Channel;
@@ -53,10 +52,14 @@ public class SessionManager {
     public static void remove(Channel channel) {
         group.remove(channel);
         checked.remove(channel.hashCode());
-        BasePlayer player = channel.attr(IBaseConnector.PLAYER).get();
-        if (player != null) {
-            userIdChannels.remove(player.getId());
+        Integer uid = channel.attr(IBaseConnector.USER).get().getId();
+        if (uid != null) {
+            userIdChannels.remove(uid);
         }
+    }
+
+    public static Channel getChannel(long uid) {
+        return userIdChannels.get(uid);
     }
 
     public static void show() {

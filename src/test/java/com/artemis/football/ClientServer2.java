@@ -26,13 +26,13 @@ import java.util.Map;
  * @date 2018-05-21 17:01
  */
 
-public class ClientServer {
+public class ClientServer2 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClientServer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientServer2.class);
 
     public static void main(String[] args) {
 
-        new ClientServer().start("192.168.0.120", 8888);
+        new ClientServer2().start("192.168.0.120", 8888);
     }
 
     void start(String address, int port) {
@@ -42,7 +42,8 @@ public class ClientServer {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
-                .handler(new ClientChannelInitializer());
+                .handler(new ClientChannelInitializer())
+                .option(ChannelOption.RCVBUF_ALLOCATOR, AdaptiveRecvByteBufAllocator.DEFAULT);
 
         try {
             ChannelFuture future = bootstrap.connect(address, port).sync();
@@ -64,9 +65,11 @@ public class ClientServer {
             ChannelPipeline pipeline = ch.pipeline();
 
             // pipeline.addLast("framer", new DelimiterBasedFrameDecoder(2048, delimiter));
-            pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
+            // pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
             // pipeline.addLast("decoder", new StringDecoder(Charset.forName("UTF-8")));
             // pipeline.addLast("encoder", new StringEncoder(Charset.forName("UTF-8")));
+            // pipeline.addFirst(new LineBasedFrameDecoder(65535));
+            pipeline.addFirst(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
             pipeline.addLast(new MessageEncoder());
             pipeline.addLast(new MessageDecoder());
             // pipeline.addFirst(new LineBasedFrameDecoder(65535));
@@ -86,6 +89,7 @@ public class ClientServer {
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
             LOGGER.info("ssssssssss + " + msg.toString());
             if (flag) {
+                Thread.sleep(3000);
                 MatchRoom matchRoom = new MatchRoom();
                 matchRoom.setScore(5);
                 Map<String, Integer> map = new HashMap<>();
@@ -93,6 +97,7 @@ public class ClientServer {
                 Message m = MessageFactory.success(ActionType.MATCH, map);
                 System.out.println(m);
                 ctx.writeAndFlush(m);
+
             }
             flag = false;
         }
@@ -100,7 +105,7 @@ public class ClientServer {
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             User user = new User();
-            user.setUsername("18500340169");
+            user.setUsername("18519207690");
             user.setPassword("E10ADC3949BA59ABBE56E057F20F883E");
 
             String a = JsonTools.toJson(user);

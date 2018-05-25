@@ -46,4 +46,9 @@ public class MessageDecoder extends ByteToMessageDecoder {
         log.info(message.toString());
         out.add(message);
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+    }
 }

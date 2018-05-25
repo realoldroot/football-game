@@ -23,7 +23,7 @@ public class MessageFactory {
     }
 
     public static Message success(int type, Object body) throws Exception {
-        return new Message(ActionType.DEFAULT, body);
+        return new Message(type, body);
     }
 
     public static Message error() throws Exception {

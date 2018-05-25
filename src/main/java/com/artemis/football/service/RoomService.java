@@ -10,4 +10,6 @@ import com.artemis.football.model.BasePlayer;
 public interface RoomService {
 
     void addPlayer(BasePlayer player, int type);
+
+    void ready(BasePlayer player, Long id);
 }

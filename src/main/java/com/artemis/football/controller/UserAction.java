@@ -3,11 +3,9 @@ package com.artemis.football.controller;
 import com.artemis.football.annotation.ActionMap;
 import com.artemis.football.annotation.NettyController;
 import com.artemis.football.common.ActionType;
-import com.artemis.football.common.Config;
 import com.artemis.football.common.JsonTools;
 import com.artemis.football.connector.IBaseConnector;
 import com.artemis.football.connector.SessionManager;
-import com.artemis.football.model.BasePlayer;
 import com.artemis.football.model.Message;
 import com.artemis.football.model.MessageFactory;
 import com.artemis.football.model.entity.User;
@@ -42,13 +40,7 @@ public class UserAction {
             User resp = userService.login(user.getUsername(), user.getPassword());
             if (resp != null) {
                 SessionManager.add(ch, resp);
-                BasePlayer player = Config.getPlayerFactory().getPlayer();
-                player.setChannel(ch);
-                player.setId(resp.getId());
-                player.setUsername(resp.getUsername());
-                player.setNickname(resp.getNickname());
-                player.setTeamName(resp.getTeamName());
-                ch.attr(IBaseConnector.PLAYER).set(player);
+                ch.attr(IBaseConnector.USER).set(resp);
                 response = MessageFactory.authSuccess();
             } else {
                 response = MessageFactory.authError();

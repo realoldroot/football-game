@@ -3,6 +3,7 @@ package com.artemis.football.model;
 import com.artemis.football.common.JsonTools;
 import com.artemis.football.connector.MessageDecoder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author zhengenshen
@@ -10,6 +11,7 @@ import lombok.Data;
  */
 
 @Data
+@Slf4j
 public class Message {
 
     private byte tag;

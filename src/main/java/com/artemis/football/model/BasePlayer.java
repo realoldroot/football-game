@@ -1,11 +1,9 @@
 package com.artemis.football.model;
 
+import com.artemis.football.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.netty.channel.Channel;
 import lombok.Data;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author zhengenshen
@@ -20,11 +18,20 @@ public class BasePlayer {
     protected Channel channel;
     protected String username;
     protected String nickname;
+    protected Long roomId;
     protected String teamName;
-    private BasePosition position;
+    protected Units units = new Units();
 
-    private Map<Integer, BasePosition> actions = new HashMap<>();
+    protected int status;
 
-    protected boolean isInQueue = false;
+    public BasePlayer(User user, Channel ch) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.nickname = user.getNickname();
+        this.teamName = user.getTeamName();
+        this.channel = ch;
+    }
 
+    public BasePlayer() {
+    }
 }

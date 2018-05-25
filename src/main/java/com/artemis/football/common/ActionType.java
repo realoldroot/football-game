@@ -20,5 +20,15 @@ public class ActionType {
      */
     public static final int MATCH_SUCCESS = 51;
 
+    /**
+     * 准备
+     */
+    public static final int READY = 6;
+
+    /**
+     * 准备
+     */
+    public static final int ALL_READY = 7;
+
     public static final int DEFAULT = 0;
 }

@@ -1,6 +1,6 @@
 package com.artemis.football.connector;
 
-import com.artemis.football.model.BasePlayer;
+import com.artemis.football.model.entity.User;
 import io.netty.util.AttributeKey;
 
 /**
@@ -10,7 +10,7 @@ import io.netty.util.AttributeKey;
 
 public interface IBaseConnector {
 
-    AttributeKey<BasePlayer> PLAYER = AttributeKey.valueOf("player");
+    AttributeKey<User> USER = AttributeKey.valueOf("user");
 
     void start();
 

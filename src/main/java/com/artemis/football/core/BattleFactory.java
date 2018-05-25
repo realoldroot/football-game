@@ -6,10 +6,6 @@ import com.artemis.football.model.MatchRoom;
 import com.artemis.football.model.Message;
 import com.artemis.football.model.MessageFactory;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
  * 对战工厂
  *
@@ -29,13 +25,14 @@ public class BattleFactory {
      */
     public static MatchRoom create(BasePlayer player1, BasePlayer player2, int score) {
 
-        List<BasePlayer> players = Stream.of(player1, player1).collect(Collectors.toList());
-
+        long id = System.currentTimeMillis();
+        player1.setRoomId(id);
+        player2.setRoomId(id);
         MatchRoom matchRoom = new MatchRoom();
         matchRoom.setScore(score);
-        matchRoom.setPlayer1(player1);
-        matchRoom.setPlayer2(player2);
-        matchRoom.setId(System.currentTimeMillis());
+        matchRoom.putPlayer(player1.getId(), player1);
+        matchRoom.putPlayer(player2.getId(), player2);
+        matchRoom.setId(id);
 
         try {
             Message m = MessageFactory.success(ActionType.MATCH_SUCCESS, matchRoom);
