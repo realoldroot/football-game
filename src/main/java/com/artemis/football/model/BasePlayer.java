@@ -18,7 +18,7 @@ public class BasePlayer {
     protected Channel channel;
     protected String username;
     protected String nickname;
-    protected Long roomId;
+    protected Integer roomId;
     protected String teamName;
     protected Units units = new Units();
 

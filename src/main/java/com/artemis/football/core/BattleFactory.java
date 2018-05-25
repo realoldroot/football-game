@@ -25,7 +25,7 @@ public class BattleFactory {
      */
     public static MatchRoom create(BasePlayer player1, BasePlayer player2, int score) {
 
-        long id = System.currentTimeMillis();
+        Integer id = player1.hashCode() + player2.hashCode();
         player1.setRoomId(id);
         player2.setRoomId(id);
         MatchRoom matchRoom = new MatchRoom();
@@ -41,6 +41,9 @@ public class BattleFactory {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        RoomManager.createRoom(matchRoom);
+
         return matchRoom;
     }
 }

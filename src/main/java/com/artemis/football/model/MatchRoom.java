@@ -17,7 +17,7 @@ import java.util.Map;
 public class MatchRoom {
 
     @Id
-    private Long id;
+    private Integer id;
     private int score;
 
     private Map<Integer, BasePlayer> players = new HashMap<>();

@@ -11,5 +11,5 @@ public interface RoomService {
 
     void addPlayer(BasePlayer player, int type);
 
-    void ready(BasePlayer player, Long id);
+    void ready(BasePlayer player, Integer id);
 }
