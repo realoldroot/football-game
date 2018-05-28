@@ -30,5 +30,15 @@ public class ActionType {
      */
     public static final int ALL_READY = 7;
 
+    /**
+     * 争夺抢球权
+     */
+    public static final int SCRAMBLE = 8;
+
+    /**
+     * 争夺抢球权完毕
+     */
+    public static final int SCRAMBLE_END = 9;
+
     public static final int DEFAULT = 0;
 }

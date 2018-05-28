@@ -22,6 +22,13 @@ public class BasePlayer {
     protected String teamName;
     protected Units units = new Units();
 
+    /**
+     * 拼图时间
+     */
+    protected Integer JigsawTime;
+    /**
+     * 玩家准备状态 0 未准备  1 准备完毕
+     */
     protected int status;
 
     public BasePlayer(User user, Channel ch) {

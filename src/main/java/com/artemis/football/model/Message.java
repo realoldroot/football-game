@@ -37,14 +37,20 @@ public class Message {
     }
 
 
-    public Message(int command, Object body) throws Exception {
+    public Message(int command, Object body) {
         this.tag = MessageDecoder.PACKAGE_TAG;
         this.encode = 0x01;
         this.encrypt = 0x01;
         this.command = command;
-        String json = JsonTools.toJson(body);
-        this.length = json.getBytes("UTF-8").length;
-        this.body = json;
+        String json;
+        try {
+            json = JsonTools.toJson(body);
+            this.length = json.getBytes("UTF-8").length;
+            this.body = json;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public Message() {

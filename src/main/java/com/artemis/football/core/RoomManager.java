@@ -31,7 +31,7 @@ public class RoomManager {
     /**
      * 用来保存双人房间的
      */
-    public static final Map<Integer, MatchRoom> ROOMS = new ConcurrentHashMap<>();
+    private static final Map<Integer, MatchRoom> ROOMS = new ConcurrentHashMap<>();
 
     /**
      * 为两位玩家创建房间

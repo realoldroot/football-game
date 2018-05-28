@@ -18,8 +18,19 @@ public class MatchRoom {
 
     @Id
     private Integer id;
+    /**
+     * 房间积分
+     */
     private int score;
 
+    /**
+     * 发球人
+     */
+    private Integer priority;
+
+    /**
+     * 用户 key ： 用户id  value ： 用户信息
+     */
     private Map<Integer, BasePlayer> players = new HashMap<>();
 
     private int winner;

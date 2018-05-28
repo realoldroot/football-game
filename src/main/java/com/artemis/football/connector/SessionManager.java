@@ -43,7 +43,6 @@ public class SessionManager {
      * 广播
      */
     public static void broadcast(Object o) {
-        group.writeAndFlush(Response.broadcast(o));
     }
 
     /**
@@ -52,9 +51,11 @@ public class SessionManager {
     public static void remove(Channel channel) {
         group.remove(channel);
         checked.remove(channel.hashCode());
-        Integer uid = channel.attr(IBaseConnector.USER).get().getId();
-        if (uid != null) {
-            userIdChannels.remove(uid);
+        if (channel.hasAttr(IBaseConnector.USER)) {
+            Integer uid = channel.attr(IBaseConnector.USER).get().getId();
+            if (uid != null) {
+                userIdChannels.remove(uid);
+            }
         }
     }
 

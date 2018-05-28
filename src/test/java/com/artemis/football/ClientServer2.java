@@ -68,6 +68,7 @@ public class ClientServer2 {
                 Factory.ready(ctx, message, 4);
             } else if (message.getCommand() == ActionType.ALL_READY) {
                 LOGGER.info("大家都准备好了 {}", message);
+                Factory.scramble(ctx, message, 4);
             } else {
                 LOGGER.info("收到消息 + " + msg.toString());
             }

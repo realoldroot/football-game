@@ -14,32 +14,32 @@ public class MessageFactory {
     private static final Response ERROR = new Response(1, "error");
 
 
-    public static Message success() throws Exception {
+    public static Message success() {
         return new Message(ActionType.DEFAULT, SUCCESS);
     }
 
-    public static Message success(int type) throws Exception {
+    public static Message success(int type) {
         return new Message(type, SUCCESS);
     }
 
-    public static Message success(int type, Object body) throws Exception {
+    public static Message success(int type, Object body) {
         return new Message(type, body);
     }
 
-    public static Message error() throws Exception {
+    public static Message error() {
         return new Message(ActionType.DEFAULT, ERROR);
     }
 
-    public static Message error(int type) throws Exception {
+    public static Message error(int type) {
         return new Message(type, ERROR);
     }
 
 
-    public static Message authSuccess() throws Exception {
+    public static Message authSuccess() {
         return new Message(ActionType.AUTH, SUCCESS);
     }
 
-    public static Message authError() throws Exception {
+    public static Message authError() {
         return new Message(ActionType.AUTH, ERROR);
     }
 

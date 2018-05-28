@@ -4,10 +4,7 @@ import com.artemis.football.common.ActionType;
 import com.artemis.football.connector.SessionManager;
 import com.artemis.football.core.BattleFactory;
 import com.artemis.football.core.RoomManager;
-import com.artemis.football.model.BasePlayer;
-import com.artemis.football.model.MatchRoom;
-import com.artemis.football.model.Message;
-import com.artemis.football.model.MessageFactory;
+import com.artemis.football.model.*;
 import io.netty.channel.Channel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -26,7 +23,6 @@ public class RoomServiceImpl implements RoomService {
 
     @Autowired
     private ThreadPoolTaskScheduler taskScheduler;
-
 
 
     @Override
@@ -82,6 +78,32 @@ public class RoomServiceImpl implements RoomService {
         // });
     }
 
+    @Override
+    public void scramble(ScrambleFirst sf) {
+
+        MatchRoom mr = RoomManager.getRoom(sf.getRoomId());
+        synchronized (mr) {
+            if (mr.getPriority() == null) {
+                mr.setPriority(sf.getUid());
+            } else {
+                if (mr.getPlayer(mr.getPriority()).getJigsawTime() < sf.getJigsawTime()) {
+                    mr.setPriority(sf.getUid());
+                }
+            }
+            BasePlayer player = mr.getPlayer(sf.getUid());
+            player.setJigsawTime(sf.getJigsawTime());
+        }
+
+        taskScheduler.execute(() -> {
+
+            long count = mr.getPlayers().values().stream().filter(v -> v.getJigsawTime() != null).count();
+            if (count >= 2) {
+                Message m = MessageFactory.success(ActionType.SCRAMBLE_END, mr);
+            }
+        });
+
+    }
+
     class Task implements Runnable {
 
         private MatchRoom mr;
@@ -92,20 +114,16 @@ public class RoomServiceImpl implements RoomService {
 
         @Override
         public void run() {
-            long count = mr.getPlayers().entrySet().parallelStream()
-                    .filter(v -> v.getValue().getStatus() == 1).count();
+            // long count = mr.getPlayers().entrySet().parallelStream().filter(v -> v.getValue().getStatus() == 1).count();
+            long count = mr.getPlayers().values().parallelStream().filter(v -> v.getStatus() == 1).count();
             if (count >= 2) {
-                try {
-                    Message m = MessageFactory.success(ActionType.ALL_READY, mr);
-                    mr.getPlayers().keySet().parallelStream().forEach(key -> {
-                        Channel ch = SessionManager.getChannel(key);
-                        if (ch != null) {
-                            ch.writeAndFlush(m);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Message m = MessageFactory.success(ActionType.ALL_READY, mr);
+                mr.getPlayers().keySet().parallelStream().forEach(key -> {
+                    Channel ch = SessionManager.getChannel(key);
+                    if (ch != null) {
+                        ch.writeAndFlush(m);
+                    }
+                });
             }
         }
     }

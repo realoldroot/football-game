@@ -1,5 +1,6 @@
 package com.artemis.football.common;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
@@ -11,6 +12,7 @@ import java.util.Map;
  * @date 2018-05-22 11:39
  */
 
+@Slf4j
 @Service
 public class ActionMapUtil {
 
@@ -20,6 +22,7 @@ public class ActionMapUtil {
         Action action = map.get(key);
         if (action != null) {
             Method method = action.getMethod();
+            log.info("method {}    {}", action, args);
             return method.invoke(action.getObject(), args);
         }
         return null;

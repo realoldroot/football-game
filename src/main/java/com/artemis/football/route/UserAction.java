@@ -1,4 +1,4 @@
-package com.artemis.football.controller;
+package com.artemis.football.route;
 
 import com.artemis.football.annotation.ActionMap;
 import com.artemis.football.annotation.NettyController;
@@ -52,5 +52,10 @@ public class UserAction {
         ChannelFuture future = ch.write(response);
         // future.addListener(ChannelFutureListener.CLOSE);
 
+    }
+
+    @ActionMap(ActionType.DEFAULT)
+    public void heart(ChannelHandlerContext ctx, Message message) {
+        ctx.channel().writeAndFlush(MessageFactory.success(ActionType.DEFAULT));
     }
 }
