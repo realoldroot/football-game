@@ -1,7 +1,12 @@
 package com.artemis.football.core;
 
+import com.artemis.football.common.ActionType;
+import com.artemis.football.connector.IBaseConnector;
 import com.artemis.football.model.BasePlayer;
 import com.artemis.football.model.MatchRoom;
+import com.artemis.football.model.Message;
+import com.artemis.football.model.MessageFactory;
+import io.netty.channel.Channel;
 
 import java.util.Map;
 import java.util.Queue;
@@ -51,6 +56,14 @@ public class RoomManager {
         return ROOMS.getOrDefault(id, null);
     }
 
+    /**
+     * 移除房间
+     *
+     * @param id 房间号
+     */
+    public static void removeRoom(int id) {
+        ROOMS.remove(id);
+    }
 
     /**
      * 存入匹配房间队列
@@ -99,5 +112,40 @@ public class RoomManager {
                 break;
         }
         return queue;
+    }
+
+    /**
+     * 用户退出或掉线时触发
+     * 去连接attr里查询用户当前房间号
+     * 如果用户有房间的话，通知匹配的玩家
+     * 移除房间
+     *
+     * @param ch 连接
+     */
+    public static void quit(Channel ch) {
+        if (ch.hasAttr(IBaseConnector.ROOM_ID)) {
+            int roomId = ch.attr(IBaseConnector.ROOM_ID).get();
+            MatchRoom mr = getRoom(roomId);
+
+            Message m = MessageFactory.success(ActionType.PLAYER_QUIT);
+
+            //取出当前掉线用户的id
+            if (ch.hasAttr(IBaseConnector.USER)) {
+                int uid = ch.attr(IBaseConnector.USER).get().getId();
+                //房间中筛选出另外一个用户，通知他掉线了。
+                if (mr.getPlayers() != null) {
+                    mr.getPlayers().entrySet().stream()
+                            .filter(entry -> entry.getKey() != uid)
+                            .forEach(entry -> {
+                                Channel channel = entry.getValue().getChannel();
+                                if (channel != null) {
+                                    channel.writeAndFlush(m);
+                                }
+                            });
+                }
+            }
+
+            removeRoom(roomId);
+        }
     }
 }

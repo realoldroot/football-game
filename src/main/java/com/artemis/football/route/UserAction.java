@@ -36,7 +36,7 @@ public class UserAction {
 
         Channel ch = ctx.channel();
 
-        if (SessionManager.notContains(ch)) {
+        if (!ch.hasAttr(IBaseConnector.USER)) {
             User resp = userService.login(user.getUsername(), user.getPassword());
             if (resp != null) {
                 SessionManager.add(ch, resp);

@@ -12,7 +12,10 @@ public interface IBaseConnector {
 
     AttributeKey<User> USER = AttributeKey.valueOf("user");
 
+    AttributeKey<Integer> ROOM_ID = AttributeKey.valueOf("room_id");
+
     void start();
+
 
     void stop();
 }

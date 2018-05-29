@@ -20,7 +20,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
     /**
      * 包长度志头
      **/
-    public static final int HEAD_LENGHT = 20;
+    public static final int HEAD_LENGHT = 7;
     /**
      * 标志头
      **/

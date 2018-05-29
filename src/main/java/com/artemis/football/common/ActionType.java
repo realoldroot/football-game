@@ -40,5 +40,10 @@ public class ActionType {
      */
     public static final int SCRAMBLE_END = 8;
 
+    /**
+     * 玩家退出 或断开连接
+     */
+    public static final int PLAYER_QUIT = 9;
+
     public static final int DEFAULT = 0;
 }

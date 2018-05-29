@@ -1,6 +1,7 @@
 package com.artemis.football.core;
 
 import com.artemis.football.common.ActionType;
+import com.artemis.football.connector.IBaseConnector;
 import com.artemis.football.model.BasePlayer;
 import com.artemis.football.model.MatchRoom;
 import com.artemis.football.model.Message;
@@ -25,7 +26,7 @@ public class BattleFactory {
      */
     public static MatchRoom create(BasePlayer player1, BasePlayer player2, int score) {
 
-        Integer id = player1.hashCode() + player2.hashCode();
+        Integer id = Math.abs(player1.hashCode() + player2.hashCode());
         player1.setRoomId(id);
         player2.setRoomId(id);
         MatchRoom matchRoom = new MatchRoom();
@@ -36,6 +37,8 @@ public class BattleFactory {
 
         try {
             Message m = MessageFactory.success(ActionType.MATCH_SUCCESS, matchRoom);
+            player1.getChannel().attr(IBaseConnector.ROOM_ID).set(id);
+            player2.getChannel().attr(IBaseConnector.ROOM_ID).set(id);
             player1.getChannel().writeAndFlush(m);
             player2.getChannel().writeAndFlush(m);
         } catch (Exception e) {

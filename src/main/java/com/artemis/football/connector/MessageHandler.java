@@ -1,6 +1,7 @@
 package com.artemis.football.connector;
 
 import com.artemis.football.common.ActionMapUtil;
+import com.artemis.football.core.RoomManager;
 import com.artemis.football.model.Message;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -31,7 +32,7 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable t) {
         log.error(t.getMessage(), t);
-        SessionManager.remove(ctx.channel());
+        channelInactive(ctx);
     }
 
     @Override
@@ -42,14 +43,18 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
         String realIp = ipArr[0].substring(ipArr[0].indexOf("/") + 1);
         log.info("channel hash : " + ch.hashCode());
         log.info("ManagerConnector connected " + ip);
-        if (SessionManager.notContains(ch)) {
+        if (!ch.hasAttr(IBaseConnector.USER)) {
             ctx.executor().schedule(() -> {
-                if (SessionManager.notContains(ch)) {
-                    log.error(ch.hashCode() + "");
-                    SessionManager.checked.forEach(System.out::println);
-                    log.error("这么长时间过去了，依旧没有校验，关闭！");
+                if (!ch.hasAttr(IBaseConnector.USER)) {
+                    log.error("连接{}这么长时间过去了，依旧没有校验，关闭！", ch.hashCode());
                     ch.close();
                 }
+                // if (SessionManager.notContains(ch)) {
+                //     log.error(ch.hashCode() + "");
+                //     SessionManager.checked.forEach(System.out::println);
+                //     log.error("这么长时间过去了，依旧没有校验，关闭！");
+                //     ch.close();
+                // }
             }, 5, TimeUnit.SECONDS);
         }
 
@@ -58,9 +63,8 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         Channel ch = ctx.channel();
+        RoomManager.quit(ch);
         SessionManager.remove(ch);
-        log.info("ManagerConnector closed " + ch.remoteAddress());
-
     }
 
 
@@ -71,7 +75,7 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.debug("msg------------------->{}", msg);
+        log.debug("msg -> {}", msg);
         Message message = (Message) msg;
         actionMapUtil.invoke(message.getCommand(), ctx, message);
         ReferenceCountUtil.release(msg);
