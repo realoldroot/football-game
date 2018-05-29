@@ -1,10 +1,13 @@
 package com.artemis.football.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.Id;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 匹配房间
@@ -28,6 +31,9 @@ public class MatchRoom {
      */
     private Integer priority;
 
+    @JsonIgnore
+    private Lock lock = new ReentrantLock();
+
     /**
      * 用户 key ： 用户id  value ： 用户信息
      */
@@ -41,5 +47,13 @@ public class MatchRoom {
 
     public BasePlayer getPlayer(Integer key) {
         return players.get(key);
+    }
+
+    public void lock() {
+        this.lock.lock();
+    }
+
+    public void unlock() {
+        this.lock.unlock();
     }
 }

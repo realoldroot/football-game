@@ -17,10 +17,8 @@ import java.util.Map;
 public class Factory {
 
     public static void match(ChannelHandlerContext ctx) throws Exception {
-        MatchRoom matchRoom = new MatchRoom();
-        matchRoom.setScore(5);
         Map<String, Integer> map = new HashMap<>();
-        map.put("score", 5);
+        map.put("score", 10);
         Message m = MessageFactory.success(ActionType.MATCH, map);
         System.out.println("发送匹配用户" + m);
         ctx.writeAndFlush(m);

@@ -13,32 +13,32 @@ public class ActionType {
     /**
      * 匹配房间
      */
-    public static final int MATCH = 5;
+    public static final int MATCH = 3;
 
     /**
      * 匹配成功
      */
-    public static final int MATCH_SUCCESS = 51;
+    public static final int MATCH_SUCCESS = 4;
 
     /**
      * 准备
      */
-    public static final int READY = 6;
+    public static final int READY = 5;
 
     /**
      * 准备
      */
-    public static final int ALL_READY = 7;
+    public static final int ALL_READY = 6;
 
     /**
      * 争夺抢球权
      */
-    public static final int SCRAMBLE = 8;
+    public static final int SCRAMBLE = 7;
 
     /**
      * 争夺抢球权完毕
      */
-    public static final int SCRAMBLE_END = 9;
+    public static final int SCRAMBLE_END = 8;
 
     public static final int DEFAULT = 0;
 }

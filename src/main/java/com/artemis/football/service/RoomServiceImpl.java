@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
+import java.util.Queue;
+
 import static com.artemis.football.core.RoomManager.*;
 
 
@@ -27,19 +29,24 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void addPlayer(BasePlayer player, int type) {
-        if (FIVE == type) {
-            FIVE_ROOM.offer(player);
-        } else if (TEN == type) {
-            TEN_ROOM.offer(player);
-        }
+        RoomManager.matching(player, type);
+        // if (FIVE == type) {
+        //     FIVE_ROOM.matching(player);
+        // } else if (TEN == type) {
+        //     TEN_ROOM.matching(player);
+        // }
 
         taskScheduler.execute(() -> {
-            if (FIVE_ROOM.size() >= 2 && FIVE_ROOM.size() % 2 == 0) {
-                synchronized (FIVE_ROOM) {
-                    if (FIVE_ROOM.size() >= 2 && FIVE_ROOM.size() % 2 == 0) {
-                        BasePlayer player1 = FIVE_ROOM.poll();
-                        BasePlayer player2 = FIVE_ROOM.poll();
-                        MatchRoom matchRoom = BattleFactory.create(player1, player2, FIVE);
+            Queue<BasePlayer> queue = RoomManager.getQueue(type);
+            if (queue != null) {
+                int size = queue.size();
+                if (size >= 2 && size % 2 == 0) {
+                    synchronized (queue) {
+                        if (queue.size() >= 2 && queue.size() % 2 == 0) {
+                            BasePlayer player1 = queue.poll();
+                            BasePlayer player2 = queue.poll();
+                            MatchRoom matchRoom = BattleFactory.create(player1, player2, FIVE);
+                        }
                     }
                 }
             }
@@ -50,14 +57,35 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void ready(BasePlayer player, Integer id) {
         MatchRoom mr = RoomManager.getRoom(id);
-        synchronized (mr) {
-            player.setStatus(1);
+        //设置玩家准备状态
+        player.setStatus(PlayerStatus.READY);
+        try {
+            mr.lock();
+            //房间添加玩家
             mr.putPlayer(player.getId(), player);
+            //查看玩家是否都已准备好
+            long count = mr.getPlayers().values().parallelStream().filter(v -> v.getStatus() == PlayerStatus.READY).count();
+            if (count == 2) {
+
+                taskScheduler.execute(() -> {
+                    Message m = MessageFactory.success(ActionType.ALL_READY, mr);
+                    mr.getPlayers().values().forEach(v -> v.getChannel().writeAndFlush(m));
+                    // mr.getPlayers().keySet().forEach(key -> {
+                    //     Channel ch = SessionManager.getChannel(key);
+                    //     if (ch != null) {
+                    //         ch.writeAndFlush(m);
+                    //     }
+                    // });
+                });
+
+            }
+
+        } finally {
+            mr.unlock();
         }
 
 
-        //TODO 这里暂时会有问题，没有考虑到并发情况，应该针对对象加锁
-        taskScheduler.execute(new Task(mr));
+        // taskScheduler.execute(new Task(mr));
 
         // taskScheduler.execute(() -> {
         //     long count = mr.getPlayers().entrySet().parallelStream()
@@ -80,27 +108,34 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void scramble(ScrambleFirst sf) {
-
         MatchRoom mr = RoomManager.getRoom(sf.getRoomId());
-        synchronized (mr) {
+        try {
+            mr.lock();
+            //如果当前优先发球人为空 设置当前用户优先发球人
             if (mr.getPriority() == null) {
                 mr.setPriority(sf.getUid());
             } else {
+                //如果当前发球人的滑块时间 小于 当前人的滑块时间 设置发球人为当前用户
                 if (mr.getPlayer(mr.getPriority()).getJigsawTime() < sf.getJigsawTime()) {
                     mr.setPriority(sf.getUid());
                 }
             }
-            BasePlayer player = mr.getPlayer(sf.getUid());
-            player.setJigsawTime(sf.getJigsawTime());
-        }
+            //保存当前用户的发球时间
+            mr.getPlayer(sf.getUid()).setJigsawTime(sf.getJigsawTime());
 
-        taskScheduler.execute(() -> {
-
+            //累计两个用户的发球人是否都已争抢过发球权
             long count = mr.getPlayers().values().stream().filter(v -> v.getJigsawTime() != null).count();
-            if (count >= 2) {
-                Message m = MessageFactory.success(ActionType.SCRAMBLE_END, mr);
+
+            if (count == 2) {
+                //通知双方 争抢发球权结果
+                taskScheduler.execute(() -> {
+                    Message msg = MessageFactory.success(ActionType.SCRAMBLE_END, mr);
+                    mr.getPlayers().values().forEach(v -> v.getChannel().writeAndFlush(msg));
+                });
             }
-        });
+        } finally {
+            mr.unlock();
+        }
 
     }
 
@@ -108,7 +143,7 @@ public class RoomServiceImpl implements RoomService {
 
         private MatchRoom mr;
 
-        public Task(MatchRoom mr) {
+        Task(MatchRoom mr) {
             this.mr = mr;
         }
 

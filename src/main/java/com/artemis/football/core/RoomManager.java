@@ -50,4 +50,54 @@ public class RoomManager {
     public static MatchRoom getRoom(int id) {
         return ROOMS.getOrDefault(id, null);
     }
+
+
+    /**
+     * 存入匹配房间队列
+     *
+     * @param player 玩家
+     * @param type   房间类型
+     */
+    public static void matching(BasePlayer player, int type) {
+        switch (type) {
+            case FIVE:
+                FIVE_ROOM.offer(player);
+                break;
+            case TEN:
+                TEN_ROOM.offer(player);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static int size(int type) {
+        int size = 0;
+        switch (type) {
+            case FIVE:
+                size = FIVE_ROOM.size();
+                break;
+            case TEN:
+                size = TEN_ROOM.size();
+                break;
+            default:
+                break;
+        }
+        return size;
+    }
+
+    public static Queue<BasePlayer> getQueue(int type) {
+        Queue<BasePlayer> queue = null;
+        switch (type) {
+            case FIVE:
+                queue = FIVE_ROOM;
+                break;
+            case TEN:
+                queue = TEN_ROOM;
+                break;
+            default:
+                break;
+        }
+        return queue;
+    }
 }

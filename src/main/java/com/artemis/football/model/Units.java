@@ -11,11 +11,11 @@ import lombok.Data;
 @Data
 public class Units {
 
-    private Unit unit1 = new Unit();
-    private Unit unit2 = new Unit();
-    private Unit unit3 = new Unit();
-    private Unit unit4 = new Unit();
-    private Unit unit5 = new Unit();
+    private Unit unit1;
+    private Unit unit2;
+    private Unit unit3;
+    private Unit unit4;
+    private Unit unit5;
 
     public Units random() {
         this.unit1 = new Unit(10, 10);
