@@ -7,6 +7,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable t) {
         log.error(t.getMessage(), t);
-        channelInactive(ctx);
+        ctx.close();
     }
 
     @Override
@@ -65,6 +67,7 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
         Channel ch = ctx.channel();
         RoomManager.quit(ch);
         SessionManager.remove(ch);
+        log.info("channelInactive 已执行");
     }
 
 
@@ -80,5 +83,23 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
         actionMapUtil.invoke(message.getCommand(), ctx, message);
         ReferenceCountUtil.release(msg);
     }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent event = (IdleStateEvent) evt;
+            if (event.state() == IdleState.READER_IDLE) {
+                log.info("读超时，关闭连接");
+                ctx.close();
+                // ctx.channel().close();
+            }
+        }
+    }
+
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) {
+        log.info("channelUnregistered 已执行");
+    }
+
 
 }

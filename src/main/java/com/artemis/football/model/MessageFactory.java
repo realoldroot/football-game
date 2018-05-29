@@ -22,6 +22,10 @@ public class MessageFactory {
         return new Message(type, SUCCESS);
     }
 
+    public static Message heart(int type) {
+        return new Message(type);
+    }
+
     public static Message success(int type, Object body) {
         return new Message(type, body);
     }

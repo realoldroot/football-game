@@ -37,11 +37,11 @@ dependencies {
     compile group: 'com.alibaba', name: 'druid', version: '1.1.9'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
     // https://mvnrepository.com/artifact/io.netty/netty-all
-    compile group: 'io.netty', name: 'netty-all', version: '4.1.24.Final'
+//    compile group: 'io.netty', name: 'netty-all', version: '4.1.24.Final'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.5'
     // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java
-    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.5.1'
+//    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.5.1'
 
 
 }

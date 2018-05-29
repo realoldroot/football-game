@@ -14,7 +14,7 @@ import java.net.InetSocketAddress;
  * @date 2018-05-19 10:41
  */
 @Slf4j
-@Service
+@Service("managerConnector")
 public class ManagerConnector implements IBaseConnector {
 
     private final InetSocketAddress localAddress;

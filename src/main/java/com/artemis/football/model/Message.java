@@ -56,5 +56,17 @@ public class Message {
     public Message() {
     }
 
+    public Message(byte tag, byte encode, byte encrypt, int command) {
+        this.tag = tag;
+        this.encode = encode;
+        this.encrypt = encrypt;
+        this.command = command;
+    }
 
+    public Message(int command) {
+        this.tag = MessageDecoder.PACKAGE_TAG;
+        this.encode = 0x01;
+        this.encrypt = 0x01;
+        this.command = command;
+    }
 }

@@ -29,9 +29,9 @@ public class MessageDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) throws Exception {
         buf.markReaderIndex();
-        log.info("buf 长度 : {}", buf.readableBytes());
-        if (buf.readableBytes() < HEAD_LENGHT) {
-            throw new CorruptedFrameException("包长度问题");
+        int readableLength = buf.readableBytes();
+        if (readableLength < HEAD_LENGHT) {
+            throw new CorruptedFrameException("包长度太短 : " + buf.readableBytes());
         }
         byte tag = buf.readByte();
         if (tag != PACKAGE_TAG) {
@@ -40,15 +40,22 @@ public class MessageDecoder extends ByteToMessageDecoder {
         byte encode = buf.readByte();
         byte encrypt = buf.readByte();
         int command = buf.readInt();
-        int length = buf.readInt();
-        byte[] data = new byte[length];
-        buf.readBytes(data);
-        Message message = new Message(tag, encode, encrypt, command, length, new String(data, "UTF-8"));
-        out.add(message);
+
+        //心跳包只有7个字节长
+        if (readableLength == 7) {
+            Message message = new Message(tag, encode, encrypt, command);
+            out.add(message);
+        } else {
+            int length = buf.readInt();
+            byte[] data = new byte[length];
+            buf.readBytes(data);
+            Message message = new Message(tag, encode, encrypt, command, length, new String(data, "UTF-8"));
+            out.add(message);
+        }
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
     }
 }
