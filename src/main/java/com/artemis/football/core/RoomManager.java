@@ -22,6 +22,9 @@ public class RoomManager {
 
     public static final int FIVE = 5;
     public static final int TEN = 10;
+    public static final int FIFTEEN = 15;
+    public static final int TWENTY_FIVE = 25;
+
 
     /**
      * 5钻区的玩家队列
@@ -32,6 +35,11 @@ public class RoomManager {
      * 10钻区的玩家队列
      */
     public static final LinkedBlockingQueue<BasePlayer> TEN_ROOM = new LinkedBlockingQueue<>();
+
+    public static final LinkedBlockingQueue<BasePlayer> FIFTEEN_ROOM = new LinkedBlockingQueue<>();
+
+    public static final LinkedBlockingQueue<BasePlayer> TWENTY_FIVE_ROOM = new LinkedBlockingQueue<>();
+
 
     /**
      * 用来保存双人房间的
@@ -80,6 +88,11 @@ public class RoomManager {
             case TEN:
                 TEN_ROOM.offer(player);
                 break;
+            case FIFTEEN:
+                FIFTEEN_ROOM.offer(player);
+                break;
+            case TWENTY_FIVE:
+                TWENTY_FIVE_ROOM.offer(player);
             default:
                 break;
         }
@@ -93,6 +106,12 @@ public class RoomManager {
                 break;
             case TEN:
                 size = TEN_ROOM.size();
+                break;
+            case FIFTEEN:
+                size = FIFTEEN_ROOM.size();
+                break;
+            case TWENTY_FIVE:
+                size = TWENTY_FIVE_ROOM.size();
                 break;
             default:
                 break;
@@ -108,6 +127,12 @@ public class RoomManager {
                 break;
             case TEN:
                 queue = TEN_ROOM;
+                break;
+            case FIFTEEN:
+                queue = FIFTEEN_ROOM;
+                break;
+            case TWENTY_FIVE:
+                queue = TWENTY_FIVE_ROOM;
                 break;
             default:
                 break;
@@ -144,7 +169,7 @@ public class RoomManager {
                                 } else {
                                     // SessionManager.userIdChannels.get(entry.getValue().getId());
                                     Channel channel1 = SessionManager.getChannels().get(entry.getValue().getId());
-                                    log.info("使用备用方案，从userChannel里拿channel {}", channel1);
+                                    log.info("使用备用方案，从SessionManager拿到channel {}", channel1);
                                     channel1.writeAndFlush(m);
 
                                 }

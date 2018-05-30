@@ -45,5 +45,12 @@ public class ActionType {
      */
     public static final int PLAYER_QUIT = 9;
 
+    /**
+     * 数据包
+     */
+    public static final int DATA_PACK = 10;
+
+    public static final int GAME_OVER = 11;
+
     public static final int DEFAULT = 0;
 }

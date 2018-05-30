@@ -5,8 +5,12 @@ import com.artemis.football.annotation.NettyController;
 import com.artemis.football.common.ActionType;
 import com.artemis.football.common.JsonTools;
 import com.artemis.football.connector.IBaseConnector;
+import com.artemis.football.connector.SessionManager;
+import com.artemis.football.core.RoomManager;
 import com.artemis.football.model.*;
 import com.artemis.football.model.entity.User;
+import com.artemis.football.service.DataPackService;
+import com.artemis.football.service.MatchRoomService;
 import com.artemis.football.service.RoomService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -67,4 +71,37 @@ public class RoomAction {
 
     }
 
+    @Autowired
+    private DataPackService dataPackService;
+
+    @ActionMap(ActionType.DATA_PACK)
+    public void dataPack(ChannelHandlerContext ctx, Message message) throws Exception {
+        Channel ch = ctx.channel();
+
+        DataPack dataPack = JsonTools.toBean(message.getBody(), DataPack.class);
+        log.info("数据包 {}", dataPack);
+        dataPackService.asyncSave(dataPack);
+
+        Channel channel = SessionManager.getChannels().get(dataPack.getToUid());
+
+        if (channel != null) {
+            log.info("从SessionManager拿到channel");
+            channel.writeAndFlush(MessageFactory.success(ActionType.DATA_PACK, dataPack));
+        } else {
+            ch.writeAndFlush(MessageFactory.success(ActionType.PLAYER_QUIT));
+        }
+
+    }
+
+    @Autowired
+    private MatchRoomService matchRoomService;
+
+    @ActionMap(ActionType.GAME_OVER)
+    public void gameOver(ChannelHandlerContext ctx, Message message) throws Exception {
+        Channel ch = ctx.channel();
+        MatchRoom matchRoom = JsonTools.toBean(message.getBody(), MatchRoom.class);
+
+        matchRoomService.asyncSave(RoomManager.getRoom(matchRoom.getId()));
+
+    }
 }
