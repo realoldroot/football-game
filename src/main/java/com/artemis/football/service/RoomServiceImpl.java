@@ -44,7 +44,7 @@ public class RoomServiceImpl implements RoomService {
         try {
             mr.lock();
             //房间添加玩家
-            mr.putPlayer(player.getId(), player);
+            mr.getPlayers().put(player.getId(), player);
             //查看玩家是否都已准备好
             long count = mr.getPlayers().values().parallelStream().filter(v -> v.getStatus() == PlayerStatus.READY).count();
             if (count == 2) {
@@ -102,12 +102,12 @@ public class RoomServiceImpl implements RoomService {
                 mr.setPriority(sf.getUid());
             } else {
                 //如果当前发球人的滑块时间 小于 当前人的滑块时间 设置发球人为当前用户
-                if (mr.getPlayer(mr.getPriority()).getJigsawTime() < sf.getJigsawTime()) {
+                if (mr.getPlayers().get(mr.getPriority()).getJigsawTime() < sf.getJigsawTime()) {
                     mr.setPriority(sf.getUid());
                 }
             }
             //保存当前用户的发球时间
-            mr.getPlayer(sf.getUid()).setJigsawTime(sf.getJigsawTime());
+            mr.getPlayers().get(sf.getUid()).setJigsawTime(sf.getJigsawTime());
 
             //累计两个用户的发球人是否都已争抢过发球权
             long count = mr.getPlayers().values().stream().filter(v -> v.getJigsawTime() != null).count();
@@ -140,7 +140,7 @@ public class RoomServiceImpl implements RoomService {
             if (count >= 2) {
                 Message m = MessageFactory.success(ActionType.ALL_READY, mr);
                 mr.getPlayers().keySet().parallelStream().forEach(key -> {
-                    Channel ch = SessionManager.getChannel(key);
+                    Channel ch = SessionManager.getChannels().get(key);
                     if (ch != null) {
                         ch.writeAndFlush(m);
                     }

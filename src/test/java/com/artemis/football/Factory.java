@@ -27,7 +27,7 @@ public class Factory {
     public static void ready(ChannelHandlerContext ctx, Message message, int id) throws Exception {
 
         MatchRoom matchRoom = JsonTools.toBean(message.getBody(), MatchRoom.class);
-        BasePlayer player = matchRoom.getPlayer(id);
+        BasePlayer player = matchRoom.getPlayers().get(id);
         player.setUnits(new Units().random());
         player.setStatus(1);
         Message m = MessageFactory.success(ActionType.READY, player);

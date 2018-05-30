@@ -128,29 +128,23 @@ public class RoomManager {
         if (ch.hasAttr(IBaseConnector.ROOM_ID)) {
             int roomId = ch.attr(IBaseConnector.ROOM_ID).get();
             MatchRoom mr = getRoom(roomId);
-            log.info("掉线人的房间 {}", mr);
             Message m = MessageFactory.success(ActionType.PLAYER_QUIT);
 
             //取出当前掉线用户的id
             if (ch.hasAttr(IBaseConnector.USER)) {
                 int uid = ch.attr(IBaseConnector.USER).get().getId();
-                log.info("拿到掉线用户id {}", uid);
                 //房间中筛选出另外一个用户，通知他掉线了。
                 if (mr != null && mr.getPlayers() != null) {
                     mr.getPlayers().entrySet().stream()
                             .filter(entry -> entry.getKey() != uid)
                             .forEach(entry -> {
-                                log.info("他的匹配对手信息 {}", entry.getValue());
                                 Channel channel = entry.getValue().getChannel();
-                                log.info("这个channel {}", channel);
                                 if (channel != null) {
-                                    log.info("给用户掉线信息了");
                                     channel.writeAndFlush(m);
                                 } else {
                                     // SessionManager.userIdChannels.get(entry.getValue().getId());
-                                    Channel channel1 = SessionManager.getChannel(entry.getValue().getId());
+                                    Channel channel1 = SessionManager.getChannels().get(entry.getValue().getId());
                                     log.info("使用备用方案，从userChannel里拿channel {}", channel1);
-
                                     channel1.writeAndFlush(m);
 
                                 }
@@ -179,8 +173,8 @@ public class RoomManager {
             player2.setRoomId(id);
             MatchRoom matchRoom = new MatchRoom();
             matchRoom.setScore(score);
-            matchRoom.putPlayer(player1.getId(), player1);
-            matchRoom.putPlayer(player2.getId(), player2);
+            matchRoom.getPlayers().put(player1.getId(), player1);
+            matchRoom.getPlayers().put(player2.getId(), player2);
             matchRoom.setId(id);
 
             try {
@@ -218,6 +212,6 @@ public class RoomManager {
     }
 
     public static void show() {
-        ROOMS.values().forEach(v -> log.info("****************{}", v.getPlayers()));
+        ROOMS.values().forEach(v -> log.info("当前房间 : {}", v.getPlayers()));
     }
 }

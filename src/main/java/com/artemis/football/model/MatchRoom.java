@@ -41,13 +41,13 @@ public class MatchRoom {
 
     private int winner;
 
-    public void putPlayer(Integer key, BasePlayer value) {
-        players.put(key, value);
-    }
-
-    public BasePlayer getPlayer(Integer key) {
-        return players.get(key);
-    }
+    // public void putPlayer(Integer key, BasePlayer value) {
+    //     players.put(key, value);
+    // }
+    //
+    // public BasePlayer getPlayer(Integer key) {
+    //     return players.get(key);
+    // }
 
     public void lock() {
         this.lock.lock();

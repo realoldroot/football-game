@@ -5,10 +5,10 @@ import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.ImmediateEventExecutor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zhengenshen
@@ -19,12 +19,13 @@ import java.util.Map;
 public class SessionManager {
     private static ChannelGroup group = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
 
-    public static Map<Integer, Channel> userIdChannels = new HashMap<>();
+    @Getter
+    public static ConcurrentHashMap<Integer, Channel> channels = new ConcurrentHashMap<>();
 
 
     public static void add(Channel channel, User user) {
         group.add(channel);
-        userIdChannels.put(user.getId(), channel);
+        channels.put(user.getId(), channel);
     }
 
     /**
@@ -36,20 +37,13 @@ public class SessionManager {
         if (channel.hasAttr(IBaseConnector.USER)) {
             Integer uid = channel.attr(IBaseConnector.USER).get().getId();
             if (uid != null) {
-                userIdChannels.remove(uid);
+                channels.remove(uid);
             }
         }
     }
 
-    public static Channel getChannel(long uid) {
-        log.error("拿channel之前 key {}", uid);
-        userIdChannels.entrySet().forEach(e -> log.info(e.toString()));
-        Channel channel = userIdChannels.get(uid);
-        log.error("channel -" + channel);
-        return channel;
-    }
 
     public static void show() {
-        userIdChannels.forEach((k, v) -> log.info(k + " : " + v + "\t"));
+        channels.forEach((k, v) -> log.info(k + " : " + v + "\t"));
     }
 }
