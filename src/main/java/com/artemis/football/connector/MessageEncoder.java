@@ -3,7 +3,6 @@ package com.artemis.football.connector;
 import com.artemis.football.model.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.MessageToByteEncoder;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,9 +28,9 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
         out.writeBytes(new byte[]{'\r', '\n'});
     }
 
-    @Override
-    public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
-        log.info("MessageEncoder.close 方法执行");
-        super.close(ctx, promise);
-    }
+    // @Override
+    // public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+    //     log.info("MessageEncoder.close 方法执行");
+    //     super.close(ctx, promise);
+    // }
 }

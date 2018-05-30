@@ -56,6 +56,6 @@ public class UserAction {
 
     @ActionMap(ActionType.DEFAULT)
     public void heart(ChannelHandlerContext ctx, Message message) {
-        ctx.channel().writeAndFlush(MessageFactory.heart(ActionType.DEFAULT));
+        ctx.channel().writeAndFlush(MessageFactory.success(ActionType.DEFAULT));
     }
 }

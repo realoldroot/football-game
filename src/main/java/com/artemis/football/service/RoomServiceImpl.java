@@ -2,17 +2,12 @@ package com.artemis.football.service;
 
 import com.artemis.football.common.ActionType;
 import com.artemis.football.connector.SessionManager;
-import com.artemis.football.core.BattleFactory;
 import com.artemis.football.core.RoomManager;
 import com.artemis.football.model.*;
 import io.netty.channel.Channel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
-
-import java.util.Queue;
-
-import static com.artemis.football.core.RoomManager.*;
 
 
 /**
@@ -36,22 +31,9 @@ public class RoomServiceImpl implements RoomService {
         //     TEN_ROOM.matching(player);
         // }
 
-        taskScheduler.execute(() -> {
-            Queue<BasePlayer> queue = RoomManager.getQueue(type);
-            if (queue != null) {
-                int size = queue.size();
-                if (size >= 2 && size % 2 == 0) {
-                    synchronized (queue) {
-                        if (queue.size() >= 2 && queue.size() % 2 == 0) {
-                            BasePlayer player1 = queue.poll();
-                            BasePlayer player2 = queue.poll();
-                            MatchRoom matchRoom = BattleFactory.create(player1, player2, FIVE);
-                        }
-                    }
-                }
-            }
-
-        });
+        if (RoomManager.getQueue(type).size() >= 2) {
+            taskScheduler.execute(() -> RoomManager.createRoom(type));
+        }
     }
 
     @Override
@@ -69,7 +51,11 @@ public class RoomServiceImpl implements RoomService {
 
                 taskScheduler.execute(() -> {
                     Message m = MessageFactory.success(ActionType.ALL_READY, mr);
-                    mr.getPlayers().values().forEach(v -> v.getChannel().writeAndFlush(m));
+                    mr.getPlayers().values().forEach(v -> {
+                        if (v.getChannel() != null) {
+                            v.getChannel().writeAndFlush(m);
+                        }
+                    });
                     // mr.getPlayers().keySet().forEach(key -> {
                     //     Channel ch = SessionManager.getChannel(key);
                     //     if (ch != null) {

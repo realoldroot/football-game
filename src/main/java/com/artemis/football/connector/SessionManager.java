@@ -7,8 +7,8 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.ImmediateEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author zhengenshen
@@ -18,7 +18,8 @@ import java.util.concurrent.ConcurrentMap;
 @Slf4j
 public class SessionManager {
     private static ChannelGroup group = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
-    private static ConcurrentMap<Integer, Channel> userIdChannels = new ConcurrentHashMap<>();
+
+    public static Map<Integer, Channel> userIdChannels = new HashMap<>();
 
 
     public static void add(Channel channel, User user) {
@@ -41,7 +42,11 @@ public class SessionManager {
     }
 
     public static Channel getChannel(long uid) {
-        return userIdChannels.getOrDefault(uid, null);
+        log.error("拿channel之前 key {}", uid);
+        userIdChannels.entrySet().forEach(e -> log.info(e.toString()));
+        Channel channel = userIdChannels.get(uid);
+        log.error("channel -" + channel);
+        return channel;
     }
 
     public static void show() {

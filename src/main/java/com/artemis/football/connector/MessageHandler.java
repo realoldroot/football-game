@@ -34,7 +34,7 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable t) {
         log.error(t.getMessage(), t);
-        ctx.close();
+        ctx.channel().close();
     }
 
     @Override
