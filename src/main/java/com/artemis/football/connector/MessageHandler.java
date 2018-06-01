@@ -65,7 +65,7 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         Channel ch = ctx.channel();
-        RoomManager.quit(ch);
+        RoomManager.offline(ch);
         SessionManager.remove(ch);
         log.info("channelInactive 已执行");
     }

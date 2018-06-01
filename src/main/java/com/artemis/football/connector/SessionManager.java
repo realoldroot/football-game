@@ -44,6 +44,6 @@ public class SessionManager {
 
 
     public static void show() {
-        channels.forEach((k, v) -> log.info(k + " : " + v + "\t"));
+        channels.forEach((k, v) -> log.info("当前在线人员 ：" + k + " : " + v + "\t"));
     }
 }

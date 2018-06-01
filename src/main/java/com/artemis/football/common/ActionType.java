@@ -41,9 +41,9 @@ public class ActionType {
     public static final int SCRAMBLE_END = 8;
 
     /**
-     * 玩家退出 或断开连接
+     * 玩家 断开连接
      */
-    public static final int PLAYER_QUIT = 9;
+    public static final int PLAYER_OFFLINE = 9;
 
     /**
      * 数据包
@@ -51,6 +51,11 @@ public class ActionType {
     public static final int DATA_PACK = 10;
 
     public static final int GAME_OVER = 11;
+
+    /**
+     * 匹配超时
+     */
+    public static final int MATCHING_TIME_OUT = 12;
 
     public static final int DEFAULT = 0;
 }

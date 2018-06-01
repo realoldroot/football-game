@@ -33,13 +33,15 @@ public class RoomAction {
      * 用户加入匹配房间
      */
     @ActionMap(ActionType.MATCH)
-    public void searchRoom(ChannelHandlerContext ctx, Message message) throws Exception {
+    public void matchingRoom(ChannelHandlerContext ctx, Message message) throws Exception {
         Channel ch = ctx.channel();
         MatchRoom matchRoom = JsonTools.toBean(message.getBody(), MatchRoom.class);
 
         User user = ch.attr(IBaseConnector.USER).get();
+        BasePlayer player = new BasePlayer(user, ch);
+        ch.attr(IBaseConnector.PLAYER).set(player);
 
-        roomService.addPlayer(new BasePlayer(user, ch), matchRoom.getScore());
+        roomService.addPlayer(player, matchRoom.getScore());
 
         ch.writeAndFlush(MessageFactory.success());
 
@@ -71,6 +73,23 @@ public class RoomAction {
 
     }
 
+    /**
+     * 匹配超时
+     */
+    @ActionMap(ActionType.MATCHING_TIME_OUT)
+    public void matchingTimeOut(ChannelHandlerContext ctx, Message message) throws Exception {
+        Channel ch = ctx.channel();
+        MatchRoom matchRoom = JsonTools.toBean(message.getBody(), MatchRoom.class);
+
+        if (ch.hasAttr(IBaseConnector.PLAYER)) {
+            BasePlayer player = ch.attr(IBaseConnector.PLAYER).get();
+            RoomManager.exitMatch(player, matchRoom.getScore());
+        }
+
+        // RoomManager.quit(ch, ActionType.MATCHING_TIME_OUT);
+
+    }
+
     @Autowired
     private DataPackService dataPackService;
 
@@ -88,7 +107,7 @@ public class RoomAction {
             log.info("从SessionManager拿到channel");
             channel.writeAndFlush(MessageFactory.success(ActionType.DATA_PACK, dataPack));
         } else {
-            ch.writeAndFlush(MessageFactory.success(ActionType.PLAYER_QUIT));
+            ch.writeAndFlush(MessageFactory.success(ActionType.PLAYER_OFFLINE));
         }
 
     }

@@ -141,19 +141,21 @@ public class RoomManager {
     }
 
     /**
+     * 退出房间
      * 用户退出或掉线时触发
      * 去连接attr里查询用户当前房间号
      * 如果用户有房间的话，通知匹配的玩家
      * 移除房间
      *
-     * @param ch 连接
+     * @param type ActionType 是玩家掉线了 还是匹配超时退出
+     * @param ch   连接
      */
-    public static void quit(Channel ch) {
+    public static void quit(Channel ch, int type) {
 
         if (ch.hasAttr(IBaseConnector.ROOM_ID)) {
             int roomId = ch.attr(IBaseConnector.ROOM_ID).get();
             MatchRoom mr = getRoom(roomId);
-            Message m = MessageFactory.success(ActionType.PLAYER_QUIT);
+            Message m = MessageFactory.success(type);
 
             //取出当前掉线用户的id
             if (ch.hasAttr(IBaseConnector.USER)) {
@@ -237,6 +239,35 @@ public class RoomManager {
     }
 
     public static void show() {
-        ROOMS.values().forEach(v -> log.info("当前房间 : {}", v.getPlayers()));
+        ROOMS.values().forEach(v -> log.info("当前存在房间 : {}", v.getPlayers()));
+        if (FIVE_ROOM.size() > 0) {
+            log.info("10钻区当前在线人数 ：{}", FIVE_ROOM.size());
+        }
+        if (TEN_ROOM.size() > 0) {
+            log.info("10钻区当前在线人数 ：{}", TEN_ROOM.size());
+        }
+        if (FIFTEEN_ROOM.size() > 0) {
+            log.info("10钻区当前在线人数 ：{}", FIFTEEN_ROOM.size());
+        }
+        if (TWENTY_FIVE_ROOM.size() > 0) {
+            log.info("10钻区当前在线人数 ：{}", TWENTY_FIVE_ROOM.size());
+        }
+    }
+
+    /**
+     * 玩家离线触发的操作
+     * 通知房间内的对战玩家
+     */
+    public static void offline(Channel ch) {
+        quit(ch, ActionType.PLAYER_OFFLINE);
+    }
+
+    /**
+     * 退出匹配操作
+     */
+    public static void exitMatch(BasePlayer player, int type) {
+        log.info("用户退出房间{}", player);
+        LinkedBlockingQueue<BasePlayer> queue = getQueue(type);
+        queue.remove(player);
     }
 }
