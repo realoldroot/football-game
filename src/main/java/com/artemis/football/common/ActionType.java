@@ -57,5 +57,12 @@ public class ActionType {
      */
     public static final int MATCHING_TIME_OUT = 12;
 
+    /**
+     * 开始
+     */
+    public static final int BEGIN = 13;
+
+    public static final int BEGIN_DOWN = 14;
+
     public static final int DEFAULT = 0;
 }

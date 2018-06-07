@@ -123,4 +123,11 @@ public class RoomAction {
         matchRoomService.asyncSave(RoomManager.getRoom(matchRoom.getId()));
 
     }
+
+    @ActionMap(ActionType.BEGIN)
+    public void begin(ChannelHandlerContext ctx, Message message) throws Exception {
+        Channel ch = ctx.channel();
+        MatchRoom matchRoom = JsonTools.toBean(message.getBody(), MatchRoom.class);
+        matchRoomService.asyncBegin(matchRoom.getId(),matchRoom.getAngle(),matchRoom.getPower());
+    }
 }

@@ -10,4 +10,6 @@ import com.artemis.football.model.MatchRoom;
 public interface MatchRoomService {
 
     void asyncSave(MatchRoom matchRoom);
+
+    void asyncBegin(Integer id, Integer angle, Integer power);
 }
