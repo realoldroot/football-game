@@ -11,5 +11,5 @@ public interface MatchRoomService {
 
     void asyncSave(MatchRoom matchRoom);
 
-    void asyncBegin(Integer id, Integer angle, Integer power);
+    void asyncBegin(Integer id, Float angle, Float power);
 }

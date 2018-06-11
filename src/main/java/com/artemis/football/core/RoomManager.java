@@ -10,6 +10,8 @@ import com.artemis.football.model.MessageFactory;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -269,5 +271,31 @@ public class RoomManager {
         log.info("用户退出房间{}", player);
         LinkedBlockingQueue<BasePlayer> queue = getQueue(type);
         queue.remove(player);
+    }
+
+
+    /**
+     * 循环从队列中拿到玩家，当拿到两个玩家的时候 创建一个房间，然后继续循环
+     *
+     * @param type
+     */
+    public static void match(int type) {
+
+        LinkedBlockingQueue<BasePlayer> queue = getQueue(type);
+
+
+        while (true) {
+            List<BasePlayer> list = new ArrayList<>(5);
+            while (list.size() < 2) {
+                try {
+                    BasePlayer bp = queue.take();
+                    list.add(bp);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            create(list.get(0), list.get(1), type);
+        }
+
     }
 }

@@ -31,9 +31,9 @@ public class RoomServiceImpl implements RoomService {
         //     TEN_ROOM.matching(player);
         // }
 
-        if (RoomManager.getQueue(type).size() >= 2) {
-            taskScheduler.execute(() -> RoomManager.createRoom(type));
-        }
+        // if (RoomManager.getQueue(type).size() >= 2) {
+        //     taskScheduler.execute(() -> RoomManager.createRoom(type));
+        // }
     }
 
     @Override

@@ -32,7 +32,7 @@ public class MatchRoomServiceImpl implements MatchRoomService {
 
     @Async
     @Override
-    public void asyncBegin(Integer id, Integer angle, Integer power) {
+    public void asyncBegin(Integer id, Float angle, Float power) {
         MatchRoom room = RoomManager.getRoom(id);
         if (room == null) {
             return;
