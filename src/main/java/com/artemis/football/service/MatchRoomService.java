@@ -11,5 +11,5 @@ public interface MatchRoomService {
 
     void asyncSave(MatchRoom matchRoom);
 
-    void asyncBegin(Integer id, Float angle, Float power);
+    void asyncBegin(Integer id, Float x, Float y, Float z,String togglePlayer);
 }

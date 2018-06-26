@@ -34,12 +34,16 @@ public class MatchRoom {
     /**
      * 角度
      */
-    private Float angle;
+    private Float x;
 
     /**
      * 力度
      */
-    private Float power;
+    private Float y;
+
+    private Float z;
+
+    private String togglePlayer;
 
     @JsonIgnore
     private Lock lock = new ReentrantLock();

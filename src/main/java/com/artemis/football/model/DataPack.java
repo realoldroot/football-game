@@ -19,7 +19,11 @@ public class DataPack {
     private Integer roomId;
     private Integer fromUid;
     private Integer toUid;
+    private double footballX;
+    private double footballY;
+    private double footballZ;
     private Integer count;
-    private Units units;
-    private long timestamp;
+    private Units fromUnits;
+    private Units toUnits;
+    private Long timestamp;
 }

@@ -5,6 +5,7 @@ import com.artemis.football.connector.SessionManager;
 import com.artemis.football.core.RoomManager;
 import com.artemis.football.model.*;
 import io.netty.channel.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
  * @date 2018-05-23 16:21
  */
 
+@Slf4j
 @Service
 public class RoomServiceImpl implements RoomService {
 
@@ -41,8 +43,8 @@ public class RoomServiceImpl implements RoomService {
         MatchRoom mr = RoomManager.getRoom(id);
         //设置玩家准备状态
         player.setStatus(PlayerStatus.READY);
+        mr.lock();
         try {
-            mr.lock();
             //房间添加玩家
             mr.getPlayers().put(player.getId(), player);
             //查看玩家是否都已准备好
@@ -53,7 +55,16 @@ public class RoomServiceImpl implements RoomService {
                     Message m = MessageFactory.success(ActionType.ALL_READY, mr);
                     mr.getPlayers().values().forEach(v -> {
                         if (v.getChannel() != null) {
+                            log.info("用户{}已经匹配到房间，推送", v.getId());
                             v.getChannel().writeAndFlush(m);
+                        } else if (SessionManager.getChannels().get(v.getId()) != null) {
+                            Channel channel = SessionManager.getChannels().get(v.getId());
+                            if (channel != null) {
+                                log.info("用户{}使用session推送匹配到的房间", v.getId());
+                                channel.writeAndFlush(m);
+                            }
+                        } else {
+                            log.info("没有找到用户的连接，推送失败");
                         }
                     });
                     // mr.getPlayers().keySet().forEach(key -> {
@@ -102,7 +113,7 @@ public class RoomServiceImpl implements RoomService {
                 mr.setPriority(sf.getUid());
             } else {
                 //如果当前发球人的滑块时间 小于 当前人的滑块时间 设置发球人为当前用户
-                if (mr.getPlayers().get(mr.getPriority()).getJigsawTime() < sf.getJigsawTime()) {
+                if (mr.getPlayers().get(mr.getPriority()).getJigsawTime() > sf.getJigsawTime()) {
                     mr.setPriority(sf.getUid());
                 }
             }
@@ -110,13 +121,25 @@ public class RoomServiceImpl implements RoomService {
             mr.getPlayers().get(sf.getUid()).setJigsawTime(sf.getJigsawTime());
 
             //累计两个用户的发球人是否都已争抢过发球权
-            long count = mr.getPlayers().values().stream().filter(v -> v.getJigsawTime() != null).count();
+            long count = mr.getPlayers().values().stream().filter(v -> v.getJigsawTime() > 0).count();
 
             if (count == 2) {
                 //通知双方 争抢发球权结果
                 taskScheduler.execute(() -> {
                     Message msg = MessageFactory.success(ActionType.SCRAMBLE_END, mr);
-                    mr.getPlayers().values().forEach(v -> v.getChannel().writeAndFlush(msg));
+                    mr.getPlayers().values().forEach(v -> {
+                        Channel ch = v.getChannel();
+                        if (ch != null) {
+                            ch.writeAndFlush(msg);
+                        } else {
+                            ch = SessionManager.getChannels().get(v.getId());
+                            if (ch != null) {
+                                ch.writeAndFlush(msg);
+                            } else {
+                                log.error("没有连接了。");
+                            }
+                        }
+                    });
                 });
             }
         } finally {

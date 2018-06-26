@@ -86,6 +86,8 @@ public class RoomAction {
             RoomManager.exitMatch(player, matchRoom.getScore());
         }
 
+        ch.writeAndFlush(MessageFactory.success(ActionType.MATCHING_TIME_OUT));
+
         // RoomManager.quit(ch, ActionType.MATCHING_TIME_OUT);
 
     }
@@ -128,6 +130,6 @@ public class RoomAction {
     public void begin(ChannelHandlerContext ctx, Message message) throws Exception {
         Channel ch = ctx.channel();
         MatchRoom matchRoom = JsonTools.toBean(message.getBody(), MatchRoom.class);
-        matchRoomService.asyncBegin(matchRoom.getId(),matchRoom.getAngle(),matchRoom.getPower());
+        matchRoomService.asyncBegin(matchRoom.getId(), matchRoom.getX(), matchRoom.getY(),matchRoom.getZ(),matchRoom.getTogglePlayer());
     }
 }

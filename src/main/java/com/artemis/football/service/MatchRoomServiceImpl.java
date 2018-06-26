@@ -32,13 +32,15 @@ public class MatchRoomServiceImpl implements MatchRoomService {
 
     @Async
     @Override
-    public void asyncBegin(Integer id, Float angle, Float power) {
+    public void asyncBegin(Integer id, Float x, Float y, Float z, String togglePlayer) {
         MatchRoom room = RoomManager.getRoom(id);
         if (room == null) {
             return;
         }
-        room.setAngle(angle);
-        room.setPower(power);
+        room.setX(x);
+        room.setY(y);
+        room.setZ(z);
+        room.setTogglePlayer(togglePlayer);
 
         room.getPlayers().keySet().forEach(key -> {
             Channel channel = SessionManager.channels.get(key);

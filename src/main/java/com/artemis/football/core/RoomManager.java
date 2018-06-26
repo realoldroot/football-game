@@ -210,8 +210,15 @@ public class RoomManager {
                 Message m = MessageFactory.success(ActionType.MATCH_SUCCESS, matchRoom);
                 player1.getChannel().attr(IBaseConnector.ROOM_ID).set(id);
                 player2.getChannel().attr(IBaseConnector.ROOM_ID).set(id);
-                player1.getChannel().writeAndFlush(m);
-                player2.getChannel().writeAndFlush(m);
+                if (player1.getChannel() != null) {
+                    log.info("玩家{}推送", player1.getId());
+                    player1.getChannel().writeAndFlush(m);
+                }
+
+                if (player2.getChannel() != null) {
+                    log.info("玩家{}推送", player2.getId());
+                    player2.getChannel().writeAndFlush(m);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

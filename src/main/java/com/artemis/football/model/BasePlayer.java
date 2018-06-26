@@ -18,6 +18,7 @@ public class BasePlayer {
     protected Channel channel;
     protected String username;
     protected String nickname;
+    protected String headimg;
     protected Integer roomId;
     protected String teamName;
     protected Units units = new Units();
@@ -25,7 +26,7 @@ public class BasePlayer {
     /**
      * 拼图时间
      */
-    protected Integer JigsawTime;
+    protected int JigsawTime;
     /**
      * 玩家准备状态 0 未准备  1 准备完毕
      */
@@ -35,6 +36,7 @@ public class BasePlayer {
         this.id = user.getId();
         this.username = user.getUsername();
         this.nickname = user.getNickname();
+        this.headimg = user.getHeadimg();
         this.teamName = user.getTeamName();
         this.channel = ch;
     }

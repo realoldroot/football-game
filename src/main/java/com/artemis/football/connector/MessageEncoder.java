@@ -16,6 +16,7 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Message msg, ByteBuf out) throws Exception {
+        log.info(msg.toString());
         out.writeByte(MessageDecoder.PACKAGE_TAG);
         out.writeByte(msg.getEncode());
         out.writeByte(msg.getEncrypt());
